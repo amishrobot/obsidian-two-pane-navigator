@@ -13,7 +13,7 @@ export class NavigatorSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName('Theme')
-      .setDesc('Palette for the navigator panes')
+      .setDesc('Palette for the entire vault interface — panes, editor, and chrome')
       .addDropdown((dd) =>
         dd
           .addOptions({
@@ -26,6 +26,7 @@ export class NavigatorSettingTab extends PluginSettingTab {
           .onChange(async (value) => {
             this.plugin.settings.theme = value as ThemeName;
             await this.plugin.persistNow();
+            this.plugin.applyBodyTheme();
             this.plugin.getView()?.onThemeChange();
           })
       );

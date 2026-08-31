@@ -62,6 +62,7 @@ export function firstContentLine(raw: string): string {
       .replace(/^[-+]\s+/, '')
       .replace(/^\d+\.\s+/, '')
       .trim();
+    if (/^\[!/.test(clean)) continue; // callout header, e.g. [!member-card]
     if (clean) return clean;
   }
   return '';

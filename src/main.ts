@@ -3,6 +3,13 @@ import { NavigatorView, VIEW_TYPE_NAVIGATOR } from './NavigatorView';
 import { NavigatorSettingTab } from './SettingsTab';
 import { DEFAULT_SETTINGS, DEFAULT_STATE, NavigatorSettings, NavigatorState } from './types';
 
+const BODY_THEME_CLASSES = [
+  'tpn-theme-macchiato',
+  'tpn-theme-racing',
+  'tpn-theme-ink',
+  'tpn-theme-paper',
+];
+
 export default class TwoPaneNavigatorPlugin extends Plugin {
   settings: NavigatorSettings = { ...DEFAULT_SETTINGS };
   state: NavigatorState = { ...DEFAULT_STATE };
@@ -10,6 +17,7 @@ export default class TwoPaneNavigatorPlugin extends Plugin {
 
   async onload() {
     await this.loadData_();
+    this.applyBodyTheme();
 
     this.registerView(VIEW_TYPE_NAVIGATOR, (leaf: WorkspaceLeaf) => new NavigatorView(leaf, this));
 
@@ -29,14 +37,24 @@ export default class TwoPaneNavigatorPlugin extends Plugin {
     });
 
     this.app.workspace.onLayoutReady(() => {
-      if (!this.app.workspace.getLeavesOfType(VIEW_TYPE_NAVIGATOR).length) {
-        this.activateView(false);
-      }
+      // Plugin reloads can leave orphaned placeholder leaves behind; keep one.
+      const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_NAVIGATOR);
+      for (const extra of leaves.slice(1)) extra.detach();
+      if (!leaves.length) this.activateView(false);
     });
   }
 
   async onunload() {
+    document.body.classList.remove(...BODY_THEME_CLASSES);
     await this.persistNow();
+  }
+
+  /** The theme skins the whole app, not just the navigator panes: a body
+   *  class carries per-theme overrides of the design-system snippet's
+   *  --jd-* palette, which every surface in the vault reads from. */
+  applyBodyTheme(): void {
+    document.body.classList.remove(...BODY_THEME_CLASSES);
+    document.body.classList.add(`tpn-theme-${this.settings.theme}`);
   }
 
   getView(): NavigatorView | null {

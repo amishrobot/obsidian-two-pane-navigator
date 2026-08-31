@@ -2,7 +2,17 @@
    TWO-PANE NAVIGATOR — folder pane + file list
    Four palettes (Macchiato / Racing / Ink / Paper) from the design handoff.
    One structure; themes only swap custom properties.
+
+   The theme skins the ENTIRE interface, not just the navigator: the plugin
+   stamps `tpn-theme-<name>` on <body>, and the blocks in the "app-wide
+   themes" section below override the joshos-design-system snippet's --jd-*
+   palette (plus the Obsidian base ramp) at body level. Body-level custom
+   properties beat the snippet's :root definitions, so every surface the
+   snippet already tokenizes — editor, tabs, status bar, frame, callouts,
+   tables — re-themes without duplicating any structural CSS.
    ═══════════════════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;450;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 .tpn-root {
   --tpn-font-serif: 'Libre Baskerville', Georgia, serif;
@@ -579,4 +589,321 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   APP-WIDE THEMES
+   Per-theme overrides of the design-system snippet's --jd-* palette, the
+   Obsidian base ramp, and the font trio. Values from the handoff's token
+   tables: deep←pane-1, bg←pane-3 (editor), surface←table-header,
+   raised←code-bg, hover/active←file row states, border-sub←hairline,
+   muted←muted-strong, faint←muted.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+body.tpn-theme-macchiato,
+body.tpn-theme-racing,
+body.tpn-theme-ink,
+body.tpn-theme-paper {
+  --jd-font-serif: 'Libre Baskerville', Georgia, serif;
+  --jd-font-text: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --jd-font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* Map the theme onto Obsidian core + Minimal tokens directly, in BOTH base
+   modes. The design-system snippet only maps its palette under .theme-light
+   (it predates this plugin and assumed light base mode); in dark mode the
+   app was falling back to raw Minimal. The double-class selector (0,2,1)
+   outweighs Minimal's .theme-dark.minimal-* scheme rules (0,2,0), so the
+   chosen theme is authoritative regardless of base mode or Style Settings. */
+body.theme-dark[class*='tpn-theme-'],
+body.theme-light[class*='tpn-theme-'] {
+  /* Obsidian core */
+  --background-primary: var(--jd-bg);
+  --background-primary-alt: var(--jd-surface);
+  --background-secondary: var(--jd-deep);
+  --background-secondary-alt: var(--jd-bg);
+  --background-modifier-border: var(--jd-border);
+  --background-modifier-border-hover: var(--color-base-35);
+  --background-modifier-border-focus: var(--jd-accent-dim);
+  --background-modifier-form-field: var(--jd-bg);
+  --background-modifier-hover: var(--jd-hover);
+  --background-modifier-active-hover: var(--jd-active);
+  --text-normal: var(--jd-text);
+  --text-muted: var(--jd-text-muted);
+  --text-faint: var(--jd-text-faint);
+  --text-accent: var(--jd-accent);
+  --text-accent-hover: var(--jd-accent-hover);
+  --text-selection: var(--jd-accent-bg);
+  --interactive-normal: var(--jd-surface);
+  --interactive-hover: var(--jd-hover);
+  --interactive-accent: var(--jd-accent);
+  --interactive-accent-hover: var(--jd-accent-hover);
+  --color-accent: var(--jd-accent);
+  --color-accent-1: var(--jd-accent);
+  --color-accent-2: var(--jd-accent-hover);
+  --titlebar-background: var(--jd-deep);
+  --titlebar-background-focused: var(--jd-deep);
+  --frame-background: var(--jd-deep);
+  --frame-muted-color: var(--jd-text-faint);
+  --frame-icon-color: var(--jd-text-faint);
+  --frame-outline-color: var(--jd-border);
+  --tab-background-active: var(--jd-bg);
+  --tab-text-color-focused-active-current: var(--jd-heading);
+  --divider-color: var(--jd-border);
+  --scrollbar-bg: transparent;
+  --scrollbar-thumb-bg: var(--jd-border);
+  --scrollbar-active-thumb-bg: var(--color-base-40);
+  --nav-item-background-active: var(--jd-active);
+  --nav-item-color-active: var(--jd-heading);
+  --nav-item-background-hover: var(--jd-hover);
+  --code-background: var(--jd-raised);
+  --table-header-background: var(--jd-surface);
+  --table-border-color: var(--jd-border);
+  --inline-title-color: var(--jd-heading);
+  --icon-color: var(--jd-text-muted);
+  --icon-color-hover: var(--jd-text);
+  --icon-color-active: var(--jd-accent);
+  --checkbox-color: var(--jd-accent);
+  --checkbox-color-hover: var(--jd-accent-hover);
+  --checkbox-border-color: var(--color-base-40);
+  --font-text-theme: var(--jd-font-text);
+  --font-interface-theme: var(--jd-font-text);
+  --font-monospace-theme: var(--jd-font-mono);
+  /* Minimal theme */
+  --bg1: var(--jd-bg);
+  --bg2: var(--jd-deep);
+  --bg3: var(--jd-hover);
+  --ui1: var(--jd-border);
+  --ui2: var(--color-base-35);
+  --ui3: var(--color-base-40);
+  --tx1: var(--jd-text);
+  --tx2: var(--jd-text-muted);
+  --tx3: var(--jd-text-faint);
+  --tx4: var(--jd-text-faint);
+  --hl1: var(--jd-accent-dim);
+  --hl2: var(--text-highlight-bg);
+  --ax1: var(--jd-accent);
+  --ax2: var(--jd-accent-hover);
+  --ax3: var(--jd-accent);
+}
+body.theme-dark[class*='tpn-theme-'] {
+  background-color: var(--jd-deep);
+}
+body.theme-light[class*='tpn-theme-'] {
+  background-color: var(--jd-deep);
+}
+
+/* The pseudo-mica plugin washes .app-container and .titlebar with
+   translucent black for a see-through-window look. A theme owns its chrome:
+   paint those surfaces the theme's deep tone instead of an accidental tint. */
+body.theme-dark[class*='tpn-theme-'] .app-container,
+body.theme-light[class*='tpn-theme-'] .app-container,
+body.theme-dark[class*='tpn-theme-'] .titlebar,
+body.theme-light[class*='tpn-theme-'] .titlebar {
+  background-color: var(--jd-deep) !important;
+}
+
+body.tpn-theme-macchiato {
+  --jd-deep: #181825;
+  --jd-bg: #24273A;
+  --jd-surface: #2E3145;
+  --jd-raised: #2B2E42;
+  --jd-hover: #262940;
+  --jd-active: #31344E;
+  --jd-border: #363A4F;
+  --jd-border-sub: #24263A;
+  --jd-text: #CAD3F5;
+  --jd-text-muted: #A5ADCB;
+  --jd-text-faint: #8087A2;
+  --jd-heading: #F4DBD6;
+  --jd-accent: #C6A0F6;
+  --jd-accent-hover: #8AADF4;
+  --jd-accent-bg: rgba(198, 160, 246, 0.12);
+  --jd-accent-dim: rgba(198, 160, 246, 0.32);
+  --jd-hue-inbox: #EED49F;
+  --jd-hue-church: #C6A0F6;
+  --jd-hue-career: #8AADF4;
+  --jd-hue-personal: #A6DA95;
+  --jd-hue-library: #F5A97F;
+  --jd-hue-system: #6E738D;
+  --jd-hue-archive: #6E738D;
+  --jd-hue-people: #ED8796;
+  --jd-hue-launchd: #A6DA95;
+  --jd-hue-data: #EED49F;
+  --jd-hue-docs: #A5ADCB;
+  --jd-hue-books: #F5A97F;
+  --jd-hue-obsidian: #C6A0F6;
+  --jd-green: #A6DA95;
+  --jd-yellow: #EED49F;
+  --jd-red: #ED8796;
+  --background-primary-rgb: 36, 39, 58;
+  --background-secondary-rgb: 24, 24, 37;
+  --color-accent-rgb: 198, 160, 246;
+  --interactive-accent-rgb: 198, 160, 246;
+  --text-highlight-bg: rgba(238, 212, 159, 0.25);
+  --color-base-00: #181825;
+  --color-base-10: #1E2030;
+  --color-base-20: #24273A;
+  --color-base-25: #2E3145;
+  --color-base-30: #363A4F;
+  --color-base-35: #494D64;
+  --color-base-40: #5B6078;
+  --color-base-50: #8087A2;
+  --color-base-60: #A5ADCB;
+  --color-base-70: #CAD3F5;
+  --color-base-100: #F4DBD6;
+}
+
+body.tpn-theme-racing {
+  --jd-deep: #14120F;
+  --jd-bg: #201D19;
+  --jd-surface: #26221C;
+  --jd-raised: #241F1A;
+  --jd-hover: #242019;
+  --jd-active: #302A22;
+  --jd-border: #322D26;
+  --jd-border-sub: #26221C;
+  --jd-text: #E8E1D4;
+  --jd-text-muted: #A9A093;
+  --jd-text-faint: #8A8175;
+  --jd-heading: #F5EFE3;
+  --jd-accent: #3F9C62;
+  --jd-accent-hover: #5CBB7D;
+  --jd-accent-bg: rgba(63, 156, 98, 0.12);
+  --jd-accent-dim: rgba(63, 156, 98, 0.32);
+  --jd-hue-inbox: #C9A227;
+  --jd-hue-church: #3F9C62;
+  --jd-hue-career: #6E8FA8;
+  --jd-hue-personal: #8AA05A;
+  --jd-hue-library: #B4703D;
+  --jd-hue-system: #7A7266;
+  --jd-hue-archive: #7A7266;
+  --jd-hue-people: #C97B6A;
+  --jd-hue-launchd: #8AA05A;
+  --jd-hue-data: #C9A227;
+  --jd-hue-docs: #A9A093;
+  --jd-hue-books: #B4703D;
+  --jd-hue-obsidian: #3F9C62;
+  --jd-green: #5CBB7D;
+  --jd-yellow: #C9A227;
+  --jd-red: #C97B6A;
+  --background-primary-rgb: 32, 29, 25;
+  --background-secondary-rgb: 20, 18, 15;
+  --color-accent-rgb: 63, 156, 98;
+  --interactive-accent-rgb: 63, 156, 98;
+  --text-highlight-bg: rgba(201, 162, 39, 0.25);
+  --color-base-00: #14120F;
+  --color-base-10: #1A1815;
+  --color-base-20: #201D19;
+  --color-base-25: #26221C;
+  --color-base-30: #322D26;
+  --color-base-35: #3D372E;
+  --color-base-40: #5C554A;
+  --color-base-50: #8A8175;
+  --color-base-60: #A9A093;
+  --color-base-70: #E8E1D4;
+  --color-base-100: #F5EFE3;
+}
+
+body.tpn-theme-ink {
+  --jd-deep: #0F1116;
+  --jd-bg: #1B1E25;
+  --jd-surface: #22252D;
+  --jd-raised: #21242D;
+  --jd-hover: #232730;
+  --jd-active: #2E333E;
+  --jd-border: #2A2E38;
+  --jd-border-sub: #22252D;
+  --jd-text: #DFE2E8;
+  --jd-text-muted: #A7ADBB;
+  --jd-text-faint: #868C9C;
+  --jd-heading: #F6EFE4;
+  --jd-accent: #E8B75A;
+  --jd-accent-hover: #F2CD85;
+  --jd-accent-bg: rgba(232, 183, 90, 0.12);
+  --jd-accent-dim: rgba(232, 183, 90, 0.32);
+  --jd-hue-inbox: #F0A868;
+  --jd-hue-church: #E8B75A;
+  --jd-hue-career: #7FB0C7;
+  --jd-hue-personal: #9EC7A0;
+  --jd-hue-library: #E08B6A;
+  --jd-hue-system: #7D8393;
+  --jd-hue-archive: #7D8393;
+  --jd-hue-people: #E08B6A;
+  --jd-hue-launchd: #9EC7A0;
+  --jd-hue-data: #F0A868;
+  --jd-hue-docs: #A7ADBB;
+  --jd-hue-books: #E08B6A;
+  --jd-hue-obsidian: #E8B75A;
+  --jd-green: #9EC7A0;
+  --jd-yellow: #E8B75A;
+  --jd-red: #E08B6A;
+  --background-primary-rgb: 27, 30, 37;
+  --background-secondary-rgb: 15, 17, 22;
+  --color-accent-rgb: 232, 183, 90;
+  --interactive-accent-rgb: 232, 183, 90;
+  --text-highlight-bg: rgba(232, 183, 90, 0.25);
+  --color-base-00: #0F1116;
+  --color-base-10: #15171D;
+  --color-base-20: #1B1E25;
+  --color-base-25: #22252D;
+  --color-base-30: #2A2E38;
+  --color-base-35: #353A46;
+  --color-base-40: #4C5262;
+  --color-base-50: #868C9C;
+  --color-base-60: #A7ADBB;
+  --color-base-70: #DFE2E8;
+  --color-base-100: #F6EFE4;
+}
+
+body.tpn-theme-paper {
+  --jd-deep: #ECEAE3;
+  --jd-bg: #FDFCFA;
+  --jd-surface: #F0ECE3;
+  --jd-raised: #E9E5DB;
+  --jd-hover: #EBE6DC;
+  --jd-active: #E7E2D6;
+  --jd-border: #D8D3C7;
+  --jd-border-sub: #F0ECE3;
+  --jd-text: #2B2823;
+  --jd-text-muted: #5A554B;
+  --jd-text-faint: #6B6559;
+  --jd-heading: #171512;
+  --jd-accent: #004225;
+  --jd-accent-hover: #006B3C;
+  --jd-accent-bg: rgba(0, 66, 37, 0.10);
+  --jd-accent-dim: rgba(0, 66, 37, 0.30);
+  --jd-hue-inbox: #8A6A12;
+  --jd-hue-church: #004225;
+  --jd-hue-career: #24557E;
+  --jd-hue-personal: #2F7D4F;
+  --jd-hue-library: #9C4E22;
+  --jd-hue-system: #8D887B;
+  --jd-hue-archive: #8D887B;
+  --jd-hue-people: #A23B2B;
+  --jd-hue-launchd: #2F7D4F;
+  --jd-hue-data: #8A6A12;
+  --jd-hue-docs: #5A554B;
+  --jd-hue-books: #9C4E22;
+  --jd-hue-obsidian: #004225;
+  --jd-green: #2F7D4F;
+  --jd-yellow: #8A6A12;
+  --jd-red: #A23B2B;
+  --background-primary-rgb: 253, 252, 250;
+  --background-secondary-rgb: 236, 234, 227;
+  --color-accent-rgb: 0, 66, 37;
+  --interactive-accent-rgb: 0, 66, 37;
+  --text-highlight-bg: rgba(138, 106, 18, 0.22);
+  --text-on-accent: #F5F3ED;
+  --color-base-00: #ECEAE3;
+  --color-base-10: #F5F3ED;
+  --color-base-20: #FDFCFA;
+  --color-base-25: #F0ECE3;
+  --color-base-30: #D8D3C7;
+  --color-base-35: #CBC5B7;
+  --color-base-40: #8D887B;
+  --color-base-50: #6B6559;
+  --color-base-60: #5A554B;
+  --color-base-70: #2B2823;
+  --color-base-100: #171512;
 }

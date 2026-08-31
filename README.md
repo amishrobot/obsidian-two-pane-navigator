@@ -23,9 +23,16 @@ the same, and folders mixed in with files.
   folder pane.
 - **Keyboard** — up/down in the file list, left to the folder pane, right
   to the editor.
-- **Four themes** — Macchiato (Catppuccin, the vault's current palette),
-  Racing (British racing green), Ink (amber on cool near-black), Paper
-  (light). Pick in settings.
+- **Four themes, whole-interface** — Macchiato (Catppuccin), Racing
+  (British racing green), Ink (amber on cool near-black), Paper (light).
+  The theme is stamped on `<body>` and skins the entire app — editor,
+  tabs, ribbon, status bar, sidebars — by overriding the design-system
+  snippet's `--jd-*` palette plus Obsidian core and Minimal tokens
+  directly, in both base color modes. Pick in settings; switches live.
+
+> **pseudo-mica conflict:** the pseudo-mica plugin punches the window
+> chrome through to the desktop wallpaper at the native layer, which no
+> theme CSS can paint over. Disable it or the frame stays wallpaper-dark.
 
 ## Settings
 
