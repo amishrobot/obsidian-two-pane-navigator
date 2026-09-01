@@ -1201,13 +1201,23 @@ body[class*='tpn-theme-'] .callout[data-callout='member-card'] > .callout-conten
 }
 body[class*='tpn-theme-'] .callout[data-callout='member-card'] > .callout-content > ul > li {
   display: grid;
-  grid-template-columns: 96px 1fr;
+  grid-template-columns: 110px 1fr;
   align-items: baseline;
   gap: 8px;
   padding: 7px 0;
   border-bottom: 1px solid var(--jd-border-sub);
   font-size: 0.85em;
   line-height: 1.45;
+}
+/* Obsidian inserts a .list-bullet span as each li's first child. Left
+   visible it occupies the label column, shifting the label into the value
+   column and wrapping the value as a stray grid row beneath (2026-08-31).
+   The record's grid seam is the structure — no bullet needed. */
+body[class*='tpn-theme-'] .callout[data-callout='member-card'] li .list-bullet {
+  display: none;
+}
+body[class*='tpn-theme-'] .callout[data-callout='member-card'] li::marker {
+  content: '';
 }
 /* Long fields (address, ministering, tags) take the full width; same label
    column, so the grid seam holds. */
