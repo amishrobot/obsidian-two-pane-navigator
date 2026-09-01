@@ -394,7 +394,7 @@ export class NavigatorView extends ItemView {
       }
       row.createDiv('tpn-folder-marker');
       row.createSpan({ cls: 'tpn-folder-name', text: folder.name });
-      row.createSpan({ cls: 'tpn-folder-count', text: String(count) });
+      row.createSpan({ cls: 'tpn-folder-count', text: count.toLocaleString() });
 
       row.addEventListener('click', () => this.selectFolder(entry));
       row.addEventListener('contextmenu', (e) => {

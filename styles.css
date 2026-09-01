@@ -12,12 +12,15 @@
    tables — re-themes without duplicating any structural CSS.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;450;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+/* Three roles, three fonts (refinement handoff, 2026-08-31): serif = note
+   content and numerals worth reading, sans = UI labels, mono = timestamps,
+   counts, section labels. Every string belongs to exactly one. */
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
 .tpn-root {
-  --tpn-font-serif: 'Libre Baskerville', Georgia, serif;
-  --tpn-font-ui: 'Inter', -apple-system, system-ui, sans-serif;
-  --tpn-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --tpn-font-serif: 'Newsreader', Georgia, serif;
+  --tpn-font-ui: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --tpn-font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --tpn-hue: var(--tpn-accent);
 }
 
@@ -36,6 +39,7 @@
   --tpn-heading: #F4DBD6;
   --tpn-accent: #C6A0F6;
   --tpn-accent2: #8AADF4;
+  --tpn-amber: #EED49F;
   --tpn-row-sel-folder: #2A2D44;
   --tpn-row-hov-folder: #20222F;
   --tpn-row-sel-file: #31344E;
@@ -57,6 +61,7 @@
   --tpn-heading: #F5EFE3;
   --tpn-accent: #3F9C62;
   --tpn-accent2: #5CBB7D;
+  --tpn-amber: #D7B15C;
   --tpn-row-sel-folder: #292419;
   --tpn-row-hov-folder: #1F1B16;
   --tpn-row-sel-file: #302A22;
@@ -78,6 +83,7 @@
   --tpn-heading: #F6EFE4;
   --tpn-accent: #E8B75A;
   --tpn-accent2: #F2CD85;
+  --tpn-amber: #E8B75A;
   --tpn-row-sel-folder: #242832;
   --tpn-row-hov-folder: #1D2028;
   --tpn-row-sel-file: #2E333E;
@@ -86,25 +92,29 @@
   --tpn-group-rule: #2B2F39;
 }
 
+/* Paper — refined (2026-08-31 handoff): 6 surfaces, 1 accent. Green is the
+   only interactive color; amber is only "needs you". Selection = green tint
+   + 2px accent bar; hover = the same tint at half strength. */
 .tpn-theme-paper {
-  --tpn-pane1: #ECEAE3;
-  --tpn-pane2: #F5F3ED;
-  --tpn-border: #D8D3C7;
-  --tpn-border-strong: #CBC5B7;
-  --tpn-hairline: #F0ECE3;
-  --tpn-line: #8D887B;
-  --tpn-text: #2B2823;
-  --tpn-muted-strong: #5A554B;
-  --tpn-muted: #6B6559;
-  --tpn-heading: #171512;
-  --tpn-accent: #004225;
-  --tpn-accent2: #006B3C;
-  --tpn-row-sel-folder: #E3DED2;
-  --tpn-row-hov-folder: #E5E0D5;
-  --tpn-row-sel-file: #E7E2D6;
-  --tpn-row-hov-file: #EBE6DC;
-  --tpn-grip: #DAD4C8;
-  --tpn-group-rule: #DAD4C8;
+  --tpn-pane1: #F1EDE4;
+  --tpn-pane2: #F4F1E9;
+  --tpn-border: #E2DCCD;
+  --tpn-border-strong: #D6CFBE;
+  --tpn-hairline: #EBE6DA;
+  --tpn-line: #B0A797;
+  --tpn-text: #2A2723;
+  --tpn-muted-strong: #7C7466;
+  --tpn-muted: #A39A89;
+  --tpn-heading: #241F19;
+  --tpn-accent: #4C6A52;
+  --tpn-accent2: #2F4636;
+  --tpn-amber: #B07D2B;
+  --tpn-row-sel-folder: #E6EAE2;
+  --tpn-row-hov-folder: color-mix(in srgb, #E6EAE2 45%, #F1EDE4);
+  --tpn-row-sel-file: #E6EAE2;
+  --tpn-row-hov-file: color-mix(in srgb, #E6EAE2 45%, #F4F1E9);
+  --tpn-grip: #D3CCBA;
+  --tpn-group-rule: #E2DCCD;
 }
 
 /* ─── Layout ──────────────────────────────────────────────────────────── */
@@ -215,20 +225,22 @@
   background: var(--tpn-row-sel-folder);
 }
 
+/* One selection language: tinted row + 2px accent bar, everywhere. The bar
+   is always the accent — per-folder hues stay on the markers, not selection. */
 .tpn-folder-spine {
   position: absolute;
   left: 0;
-  top: 6px;
-  bottom: 6px;
-  width: 2.5px;
-  border-radius: 2px;
+  top: 5px;
+  bottom: 5px;
+  width: 2px;
+  border-radius: 1px;
   background: transparent;
 }
 .tpn-folder-row.is-selected .tpn-folder-spine {
-  background: var(--tpn-hue);
+  background: var(--tpn-accent);
 }
 .tpn-folder-row.is-drop-target .tpn-folder-spine {
-  background: var(--tpn-hue);
+  background: var(--tpn-accent);
   top: 0;
   bottom: 0;
 }
@@ -279,16 +291,31 @@
   color: var(--tpn-heading);
 }
 
+/* Pixel bullets with a job (handoff change 01): filled accent = expanded or
+   active, hollow taupe = collapsed, 4px tick = leaf/child. Squares, not
+   rounded — they're the theme's signature. */
 .tpn-folder-marker {
   width: 7px;
   height: 7px;
-  border-radius: 2px;
+  border-radius: 0;
   flex: none;
-  background: var(--tpn-hue);
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--tpn-line);
+}
+.tpn-folder-row.is-selected .tpn-folder-marker,
+.tpn-folder-row:has(.tpn-folder-chevron.is-open) .tpn-folder-marker {
+  background: var(--tpn-accent);
+  box-shadow: none;
 }
 .tpn-folder-row.is-child .tpn-folder-marker {
-  /* children carry the top-level hue at 55 alpha */
-  background: color-mix(in srgb, var(--tpn-hue) 33%, transparent);
+  width: 4px;
+  height: 4px;
+  background: var(--tpn-grip);
+  box-shadow: none;
+}
+.tpn-folder-row.is-child.is-selected .tpn-folder-marker,
+.tpn-folder-row.is-child:has(.tpn-folder-chevron.is-open) .tpn-folder-marker {
+  background: var(--tpn-accent);
 }
 
 .tpn-folder-name {
@@ -297,13 +324,16 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+/* Sentence case (handoff): mono caps were carrying grouping the section
+   labels now own; the count column is the only right-hand signal. */
 .tpn-folder-row.is-top .tpn-folder-name {
-  font-family: var(--tpn-font-mono);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-family: var(--tpn-font-ui);
+  font-size: 13px;
+  font-weight: 450;
   color: var(--tpn-text);
+}
+.tpn-folder-row.is-top.is-selected .tpn-folder-name {
+  font-weight: 500;
 }
 .tpn-folder-row.is-child .tpn-folder-name {
   font-family: var(--tpn-font-ui);
@@ -564,7 +594,7 @@
   background: transparent;
 }
 .tpn-file-row.is-selected .tpn-file-spine {
-  background: var(--tpn-hue);
+  background: var(--tpn-accent);
 }
 
 .tpn-file-body {
@@ -599,12 +629,16 @@
 .tpn-file-row.is-selected .tpn-file-name {
   color: var(--tpn-heading);
 }
+/* Amber = needs you; the selected note's dot reads accent (it's active). */
 .tpn-file-unread {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 4px;
   flex: none;
-  background: var(--tpn-hue);
+  background: var(--tpn-amber, var(--tpn-hue));
+}
+.tpn-file-row.is-selected .tpn-file-unread {
+  background: var(--tpn-accent);
 }
 
 .tpn-file-line2 {
@@ -620,7 +654,7 @@
   flex: none;
 }
 .tpn-file-when.is-today {
-  color: var(--tpn-hue);
+  color: var(--tpn-accent);
 }
 .tpn-file-dot {
   width: 2px;
@@ -726,13 +760,17 @@
    muted←muted-strong, faint←muted.
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/* Three roles, three fonts: serif carries note content, sans carries UI
+   labels, mono carries timestamps/counts/section labels. Note text is the
+   serif on purpose — reading is the vault's primary act. */
 body.tpn-theme-macchiato,
 body.tpn-theme-racing,
 body.tpn-theme-ink,
 body.tpn-theme-paper {
-  --jd-font-serif: 'Libre Baskerville', Georgia, serif;
-  --jd-font-text: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --jd-font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --jd-font-serif: 'Newsreader', Georgia, serif;
+  --jd-font-ui: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --jd-font-text: var(--jd-font-serif);
+  --jd-font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 /* Map the theme onto Obsidian core + Minimal tokens directly, in BOTH base
@@ -799,7 +837,7 @@ body.theme-light[class*='tpn-theme-'] {
   --checkbox-color-hover: var(--jd-accent-hover);
   --checkbox-border-color: var(--color-base-40);
   --font-text-theme: var(--jd-font-text);
-  --font-interface-theme: var(--jd-font-text);
+  --font-interface-theme: var(--jd-font-ui);
   --font-monospace-theme: var(--jd-font-mono);
   /* Minimal theme */
   --bg1: var(--jd-bg);
@@ -988,25 +1026,29 @@ body.tpn-theme-ink {
   --color-base-100: #F6EFE4;
 }
 
+/* Paper — refined (2026-08-31): warm paper ground, one green accent
+   (#4C6A52 — links, active, affordances), one amber (#B07D2B — "needs
+   you"), muted lifted to 4.6:1 (#7C7466), faintest tier #A39A89 reserved
+   for non-essential labels. */
 body.tpn-theme-paper {
-  --jd-deep: #ECEAE3;
-  --jd-bg: #FDFCFA;
-  --jd-surface: #F0ECE3;
-  --jd-raised: #E9E5DB;
-  --jd-hover: #EBE6DC;
-  --jd-active: #E7E2D6;
-  --jd-border: #D8D3C7;
-  --jd-border-sub: #F0ECE3;
-  --jd-text: #2B2823;
-  --jd-text-muted: #5A554B;
-  --jd-text-faint: #6B6559;
-  --jd-heading: #171512;
-  --jd-accent: #004225;
-  --jd-accent-hover: #006B3C;
-  --jd-accent-bg: rgba(0, 66, 37, 0.10);
-  --jd-accent-dim: rgba(0, 66, 37, 0.30);
+  --jd-deep: #F1EDE4;
+  --jd-bg: #F7F5EF;
+  --jd-surface: #EFECE2;
+  --jd-raised: #EFECE2;
+  --jd-hover: #EBE7DC;
+  --jd-active: #E6EAE2;
+  --jd-border: #E2DCCD;
+  --jd-border-sub: #EFEBE0;
+  --jd-text: #2A2723;
+  --jd-text-muted: #7C7466;
+  --jd-text-faint: #A39A89;
+  --jd-heading: #241F19;
+  --jd-accent: #4C6A52;
+  --jd-accent-hover: #2F4636;
+  --jd-accent-bg: #E6EAE2;
+  --jd-accent-dim: rgba(76, 106, 82, 0.35);
   --jd-hue-inbox: #8A6A12;
-  --jd-hue-church: #004225;
+  --jd-hue-church: #4C6A52;
   --jd-hue-career: #24557E;
   --jd-hue-personal: #2F7D4F;
   --jd-hue-library: #9C4E22;
@@ -1017,25 +1059,179 @@ body.tpn-theme-paper {
   --jd-hue-data: #8A6A12;
   --jd-hue-docs: #5A554B;
   --jd-hue-books: #9C4E22;
-  --jd-hue-obsidian: #004225;
-  --jd-green: #2F7D4F;
-  --jd-yellow: #8A6A12;
+  --jd-hue-obsidian: #4C6A52;
+  --jd-green: #4C6A52;
+  --jd-yellow: #B07D2B;
   --jd-red: #A23B2B;
-  --background-primary-rgb: 253, 252, 250;
-  --background-secondary-rgb: 236, 234, 227;
-  --color-accent-rgb: 0, 66, 37;
-  --interactive-accent-rgb: 0, 66, 37;
-  --text-highlight-bg: rgba(138, 106, 18, 0.22);
+  --background-primary-rgb: 247, 245, 239;
+  --background-secondary-rgb: 241, 237, 228;
+  --color-accent-rgb: 76, 106, 82;
+  --interactive-accent-rgb: 76, 106, 82;
+  --text-highlight-bg: rgba(176, 125, 43, 0.18);
   --text-on-accent: #F5F3ED;
-  --color-base-00: #ECEAE3;
-  --color-base-10: #F5F3ED;
-  --color-base-20: #FDFCFA;
-  --color-base-25: #F0ECE3;
-  --color-base-30: #D8D3C7;
-  --color-base-35: #CBC5B7;
-  --color-base-40: #8D887B;
-  --color-base-50: #6B6559;
-  --color-base-60: #5A554B;
-  --color-base-70: #2B2823;
-  --color-base-100: #171512;
+  --color-base-00: #F1EDE4;
+  --color-base-10: #F4F1E9;
+  --color-base-20: #F7F5EF;
+  --color-base-25: #EFECE2;
+  --color-base-30: #E2DCCD;
+  --color-base-35: #D6CFBE;
+  --color-base-40: #B0A797;
+  --color-base-50: #A39A89;
+  --color-base-60: #7C7466;
+  --color-base-70: #2A2723;
+  --color-base-100: #241F19;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   NOTE CONTENT (refinement handoff, 2026-08-31)
+   Applies under every TPN palette via --jd-* tokens. The moves: data set as
+   data (mono headers, hairline rows, tabular numerals), pixel-square
+   checkboxes, quiet blockquote rails, and the member-card callout promoted
+   to the page's own header.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+body[class*='tpn-theme-'] {
+  --inline-title-font: var(--jd-font-serif);
+  --inline-title-weight: 500;
+  --checkbox-size: 13px;
+  --checkbox-radius: 0;
+}
+
+body[class*='tpn-theme-'] .markdown-rendered h1,
+body[class*='tpn-theme-'] .markdown-rendered h2 {
+  font-family: var(--jd-font-serif);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+/* Tables: mono small-cap headers on one hairline, rows on sub-hairlines,
+   tabular right-stacking numerals, one continuous hover band — no per-cell
+   fills, no wrapped date columns. */
+body[class*='tpn-theme-'] .markdown-rendered table {
+  border-collapse: collapse;
+  border: none;
+}
+body[class*='tpn-theme-'] .markdown-rendered th {
+  font-family: var(--jd-font-mono);
+  font-size: 0.68em;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--jd-text-faint);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--jd-border);
+  text-align: left;
+  padding: 6px 14px 6px 0;
+}
+body[class*='tpn-theme-'] .markdown-rendered td {
+  border: none;
+  border-bottom: 1px solid var(--jd-border-sub);
+  padding: 8px 14px 8px 0;
+  font-variant-numeric: tabular-nums;
+}
+body[class*='tpn-theme-'] .markdown-rendered tbody tr:hover td {
+  background: var(--jd-surface);
+}
+
+/* Checkboxes: square, 13px, 1.5px stroke — the sidebar squares' pixel
+   language. Checked = filled accent, no glyph. */
+body[class*='tpn-theme-'] .task-list-item-checkbox {
+  border-width: 1.5px;
+  border-color: var(--jd-text-faint);
+  background: transparent;
+}
+body[class*='tpn-theme-'] .task-list-item-checkbox:checked {
+  background-color: var(--jd-accent);
+  border-color: var(--jd-accent);
+}
+body[class*='tpn-theme-'] .task-list-item-checkbox:checked::after {
+  display: none;
+}
+
+body[class*='tpn-theme-'] .markdown-rendered blockquote {
+  border-left: 2px solid var(--jd-border);
+  background: transparent;
+  padding: 2px 0 2px 14px;
+}
+
+/* ─── Member profile: the callout is the header (artboard 3a) ──────────────
+   A boxed widget floating under the title says "this is a widget"; the same
+   content set as the page header says "this is who they are". Portrait keeps
+   a 132px frame, squared corners, no ring. The **Label:** run-ins become a
+   two-up record grid with mono labels — land on RECOMMEND without reading
+   PRIESTHOOD. */
+body[class*='tpn-theme-'] .callout[data-callout='member-card'] {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  margin: 4px 0 12px;
+}
+body[class*='tpn-theme-'] .callout[data-callout='member-card'] > .callout-title {
+  display: none;
+}
+body[class*='tpn-theme-'] .callout[data-callout='member-card'] > .callout-content {
+  display: grid;
+  grid-template-columns: 132px 1fr;
+  column-gap: 26px;
+  align-items: start;
+}
+body[class*='tpn-theme-'] .callout[data-callout='member-card'] > .callout-content > p:first-child {
+  margin: 0;
+  grid-column: 1;
+}
+body[class*='tpn-theme-'] .callout[data-callout='member-card'] .image-embed img {
+  width: 132px;
+  height: 164px;
+  object-fit: cover;
+  border-radius: 0;
+  border: 1px solid var(--jd-border);
+  display: block;
+}
+body[class*='tpn-theme-'] .callout[data-callout='member-card'] > .callout-content > ul {
+  grid-column: 2;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 24px;
+  border-top: 1px solid var(--jd-border);
+}
+body[class*='tpn-theme-'] .callout[data-callout='member-card'] > .callout-content > ul > li {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  align-items: baseline;
+  gap: 8px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--jd-border-sub);
+  font-size: 0.85em;
+  line-height: 1.45;
+}
+/* Long fields (address, ministering, tags) take the full width; same label
+   column, so the grid seam holds. */
+body[class*='tpn-theme-'] .callout[data-callout='member-card'] > .callout-content > ul > li:nth-child(n+7) {
+  grid-column: 1 / -1;
+}
+body[class*='tpn-theme-'] .callout[data-callout='member-card'] li > strong {
+  font-family: var(--jd-font-mono);
+  font-weight: 500;
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--jd-text-faint);
+}
+
+/* Member-profile section headings read as mono eyebrows, not shouting H2s. */
+body[class*='tpn-theme-'] .member-profile h2 {
+  font-family: var(--jd-font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--jd-text-faint);
+  border: none;
+  margin-top: 2.2em;
+  margin-bottom: 0.6em;
 }
