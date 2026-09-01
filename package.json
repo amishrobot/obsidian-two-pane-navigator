@@ -1,6 +1,6 @@
 {
   "name": "obsidian-two-pane-navigator",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Two-pane vault navigator for Obsidian",
   "main": "main.js",
   "scripts": {

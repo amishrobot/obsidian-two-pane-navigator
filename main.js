@@ -925,6 +925,12 @@ var BODY_THEME_CLASSES = [
   "tpn-theme-ink",
   "tpn-theme-paper"
 ];
+var THEME_POLARITY = {
+  macchiato: "obsidian",
+  racing: "obsidian",
+  ink: "obsidian",
+  paper: "moonstone"
+};
 var TwoPaneNavigatorPlugin = class extends import_obsidian4.Plugin {
   constructor() {
     super(...arguments);
@@ -975,6 +981,23 @@ var TwoPaneNavigatorPlugin = class extends import_obsidian4.Plugin {
   applyBodyTheme() {
     document.body.classList.remove(...BODY_THEME_CLASSES);
     document.body.classList.add(`tpn-theme-${this.settings.theme}`);
+    this.syncBaseScheme();
+  }
+  /** The base scheme carries polarity assumptions the palette must agree
+   *  with — callout blend modes, native menus, scrollbars all key off
+   *  theme-dark/theme-light. A dark base under Paper erased callout photos
+   *  in reading view, so while a palette is active it owns the base scheme.
+   *  setTheme/changeTheme are internal API; both are guarded so a rename in
+   *  a future Obsidian degrades to a no-op, not a crash. */
+  syncBaseScheme() {
+    var _a, _b, _c, _d, _e, _f, _g;
+    const want = (_a = THEME_POLARITY[this.settings.theme]) != null ? _a : "obsidian";
+    const app = this.app;
+    if (((_c = (_b = app.vault) == null ? void 0 : _b.getConfig) == null ? void 0 : _c.call(_b, "theme")) === want)
+      return;
+    (_e = (_d = app.setTheme) != null ? _d : app.changeTheme) == null ? void 0 : _e.call(app, want);
+    (_g = (_f = app.vault) == null ? void 0 : _f.setConfig) == null ? void 0 : _g.call(_f, "theme", want);
+    app.workspace.trigger("css-change");
   }
   getView() {
     for (const leaf of this.app.workspace.getLeavesOfType(VIEW_TYPE_NAVIGATOR)) {
