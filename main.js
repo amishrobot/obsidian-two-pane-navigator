@@ -502,7 +502,7 @@ var NavigatorView = class extends import_obsidian2.ItemView {
       }
       row.createDiv("tpn-folder-marker");
       row.createSpan({ cls: "tpn-folder-name", text: folder.name });
-      row.createSpan({ cls: "tpn-folder-count", text: String(count) });
+      row.createSpan({ cls: "tpn-folder-count", text: count.toLocaleString() });
       row.addEventListener("click", () => this.selectFolder(entry));
       row.addEventListener("contextmenu", (e) => {
         e.preventDefault();
