@@ -184,6 +184,10 @@ var NewFolderModal = class extends import_obsidian.Modal {
 // src/NavigatorView.ts
 var VIEW_TYPE_NAVIGATOR = "two-pane-navigator";
 var DAY_MS = 864e5;
+var NARROW_PX = 520;
+var SUNK_NAMES = /* @__PURE__ */ new Set(["_archive", "_system"]);
+var PINNED_FIRST = "_inbox";
+var SNIPPET_EXTENSIONS = /* @__PURE__ */ new Set(["md", "txt"]);
 var NavigatorView = class extends import_obsidian2.ItemView {
   constructor(leaf, plugin) {
     super(leaf);
@@ -192,6 +196,8 @@ var NavigatorView = class extends import_obsidian2.ItemView {
     this.visibleFolders = [];
     this.visibleFiles = [];
     this.refreshTimer = null;
+    this.resizeObserver = null;
+    this.narrowShowFolders = false;
     this.draggedFile = null;
     this.plugin = plugin;
     this.excerpts = new ExcerptCache(this.app);
@@ -240,7 +246,15 @@ var NavigatorView = class extends import_obsidian2.ItemView {
         }
       })
     );
+    this.resizeObserver = new ResizeObserver(() => this.updateNarrowMode());
+    this.resizeObserver.observe(this.contentEl);
+    this.updateNarrowMode();
     this.render();
+  }
+  async onClose() {
+    var _a;
+    (_a = this.resizeObserver) == null ? void 0 : _a.disconnect();
+    this.resizeObserver = null;
   }
   onThemeChange() {
     this.applyThemeClass();
@@ -253,6 +267,11 @@ var NavigatorView = class extends import_obsidian2.ItemView {
     const root = this.contentEl;
     root.removeClasses(["tpn-theme-macchiato", "tpn-theme-racing", "tpn-theme-ink", "tpn-theme-paper"]);
     root.addClass(`tpn-theme-${this.settings.theme}`);
+  }
+  updateNarrowMode() {
+    const narrow = this.contentEl.clientWidth > 0 && this.contentEl.clientWidth < NARROW_PX;
+    this.contentEl.toggleClass("is-narrow", narrow);
+    this.contentEl.toggleClass("show-folders", narrow && this.narrowShowFolders);
   }
   scheduleRefresh() {
     if (this.refreshTimer)
@@ -268,14 +287,14 @@ var NavigatorView = class extends import_obsidian2.ItemView {
     root.empty();
     root.addClass("tpn-root");
     this.applyThemeClass();
-    const folders = root.createDiv("tpn-folders");
-    const fh = folders.createDiv("tpn-folders-header");
+    this.foldersEl = root.createDiv("tpn-folders");
+    const fh = this.foldersEl.createDiv("tpn-folders-header");
     fh.createDiv({ cls: "tpn-vault-name", text: this.app.vault.getName() });
     this.foldersHeaderSubEl = fh.createDiv("tpn-vault-sub");
-    this.foldersScrollEl = folders.createDiv("tpn-folders-scroll");
+    this.foldersScrollEl = this.foldersEl.createDiv("tpn-folders-scroll");
     this.foldersScrollEl.tabIndex = 0;
     this.foldersScrollEl.addEventListener("keydown", (e) => this.onFolderKeydown(e));
-    const ff = folders.createDiv("tpn-folders-footer");
+    const ff = this.foldersEl.createDiv("tpn-folders-footer");
     const newLabel = ff.createSpan({ cls: "tpn-footer-label", text: "new folder" });
     const plus = ff.createSpan({ cls: "tpn-footer-plus", text: "+" });
     const openNewFolder = () => this.promptNewFolder();
@@ -283,9 +302,19 @@ var NavigatorView = class extends import_obsidian2.ItemView {
     plus.addEventListener("click", openNewFolder);
     this.filesEl = root.createDiv("tpn-files");
     const header = this.filesEl.createDiv("tpn-files-header");
+    this.filesCrumbEl = header.createDiv("tpn-files-crumb");
     const titleRow = header.createDiv("tpn-files-title-row");
+    this.backBtnEl = titleRow.createSpan("tpn-back-btn");
+    (0, import_obsidian2.setIcon)(this.backBtnEl, "chevron-left");
+    this.backBtnEl.addEventListener("click", () => {
+      this.narrowShowFolders = true;
+      this.updateNarrowMode();
+    });
     this.filesHeaderNameEl = titleRow.createDiv("tpn-files-title");
     this.filesHeaderCountEl = titleRow.createDiv("tpn-files-count");
+    const newNoteBtn = titleRow.createSpan({ cls: "tpn-new-note", attr: { "aria-label": "New note" } });
+    (0, import_obsidian2.setIcon)(newNoteBtn, "plus");
+    newNoteBtn.addEventListener("click", () => this.createNote());
     const filterWrap = header.createDiv("tpn-filter");
     const filterIcon = filterWrap.createSpan("tpn-filter-icon");
     (0, import_obsidian2.setIcon)(filterIcon, "search");
@@ -315,22 +344,51 @@ var NavigatorView = class extends import_obsidian2.ItemView {
     footer.createSpan({ text: "\u2318\u2325\u2192" });
   }
   // ── Data ────────────────────────────────────────────────────────────────
+  /** _inbox first, normal folders A→Z, then archive/system sunk at the bottom. */
   topFolders() {
     const root = this.app.vault.getRoot();
-    return root.children.filter((c) => c instanceof import_obsidian2.TFolder).sort((a, b) => a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1);
+    const all = root.children.filter((c) => c instanceof import_obsidian2.TFolder);
+    const rank = (f) => {
+      const n = f.name.toLowerCase();
+      if (n === PINNED_FIRST)
+        return 0;
+      if (SUNK_NAMES.has(n))
+        return 2;
+      return 1;
+    };
+    return all.sort((a, b) => {
+      const ra = rank(a);
+      const rb = rank(b);
+      if (ra !== rb)
+        return ra - rb;
+      return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1;
+    });
+  }
+  isExpanded(path) {
+    return this.state.expandedTops.includes(path);
   }
   flattenFolders() {
     const out = [];
-    const walk = (folder, depth, top) => {
-      out.push({ folder, depth, top, isTop: depth === 0 });
-      if (depth === 0 && !this.state.expandedTops.includes(folder.name))
-        return;
+    const walk = (folder, depth, top, sunk) => {
       const kids = folder.children.filter((c) => c instanceof import_obsidian2.TFolder).sort((a, b) => a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1);
+      const expanded = this.isExpanded(folder.path);
+      out.push({
+        folder,
+        depth,
+        top,
+        isTop: depth === 0,
+        hasChildren: kids.length > 0,
+        expanded,
+        sunk
+      });
+      if (!expanded)
+        return;
       for (const kid of kids)
-        walk(kid, depth + 1, top);
+        walk(kid, depth + 1, top, sunk);
     };
-    for (const top of this.topFolders())
-      walk(top, 0, top.name);
+    for (const top of this.topFolders()) {
+      walk(top, 0, top.name, SUNK_NAMES.has(top.name.toLowerCase()));
+    }
     return out;
   }
   noteCount(folder) {
@@ -403,26 +461,47 @@ var NavigatorView = class extends import_obsidian2.ItemView {
     );
     this.foldersScrollEl.empty();
     for (const entry of flat) {
-      const { folder, depth, top, isTop } = entry;
+      const { folder, depth, top, isTop, hasChildren, expanded, sunk } = entry;
       const hue = hueFor(theme, top, colorCode);
       const selected = folder.path === this.state.folder;
       const focused = folder.path === this.focusedFolderPath;
+      const count = this.noteCount(folder);
       const row = this.foldersScrollEl.createDiv({
         cls: [
           "tpn-folder-row",
           isTop ? "is-top" : "is-child",
           selected ? "is-selected" : "",
-          focused ? "is-focused" : ""
+          focused ? "is-focused" : "",
+          sunk ? "is-sunk" : "",
+          count === 0 ? "is-empty" : ""
         ].filter(Boolean).join(" ")
       });
       row.style.setProperty("--tpn-hue", hue);
       row.style.paddingLeft = `${12 + depth * 14}px`;
       row.dataset.path = folder.path;
       row.createDiv("tpn-folder-spine");
+      const chevron = row.createSpan("tpn-folder-chevron");
+      if (hasChildren) {
+        (0, import_obsidian2.setIcon)(chevron, "chevron-right");
+        if (expanded)
+          chevron.addClass("is-open");
+        chevron.addEventListener("click", (e) => {
+          e.stopPropagation();
+          this.toggleExpand(folder.path);
+        });
+      } else {
+        chevron.addClass("is-blank");
+      }
       row.createDiv("tpn-folder-marker");
       row.createSpan({ cls: "tpn-folder-name", text: folder.name });
-      row.createSpan({ cls: "tpn-folder-count", text: String(this.noteCount(folder)) });
+      row.createSpan({ cls: "tpn-folder-count", text: String(count) });
       row.addEventListener("click", () => this.selectFolder(entry));
+      row.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+        const menu = new import_obsidian2.Menu();
+        this.app.workspace.trigger("file-menu", menu, folder, "file-explorer-context-menu");
+        menu.showAtMouseEvent(e);
+      });
       row.addEventListener("dragover", (e) => {
         var _a, _b;
         const path = (_a = e.dataTransfer) == null ? void 0 : _a.types.includes("text/plain");
@@ -454,11 +533,16 @@ var NavigatorView = class extends import_obsidian2.ItemView {
     if (!folder) {
       this.filesHeaderNameEl.setText("No folder");
       this.filesHeaderCountEl.setText("");
+      this.filesCrumbEl.setText("");
       return;
     }
     const flat = this.visibleFolders.find((f) => f.folder.path === folder.path);
-    const hue = hueFor(theme, flat ? flat.top : folder.name, colorCode);
+    const topName = flat ? flat.top : folder.path.split("/")[0];
+    const hue = hueFor(theme, topName, colorCode);
     this.filesEl.style.setProperty("--tpn-hue", hue);
+    const parentPath = folder.parent && folder.parent.path !== "/" ? folder.parent.path : "";
+    this.filesCrumbEl.setText(parentPath ? parentPath.split("/").join(" / ") : "");
+    this.filesCrumbEl.toggleClass("is-hidden", !parentPath);
     this.filesHeaderNameEl.setText(folder.name || this.app.vault.getName());
     const files = this.filesOf(folder);
     this.visibleFiles = files;
@@ -549,7 +633,7 @@ var NavigatorView = class extends import_obsidian2.ItemView {
       cls: "tpn-file-size",
       text: `${Math.max(1, Math.round(file.stat.size / 1024))} kb`
     });
-    if (this.settings.showSnippets && file.extension === "md") {
+    if (this.settings.showSnippets && SNIPPET_EXTENSIONS.has(file.extension)) {
       const snip = line2.createSpan("tpn-file-snippet");
       const cached = this.excerpts.peek(file);
       if (cached !== null) {
@@ -577,26 +661,39 @@ var NavigatorView = class extends import_obsidian2.ItemView {
       this.contentEl.findAll(".is-drop-target").forEach((el) => el.removeClass("is-drop-target"));
     });
     row.addEventListener("click", () => this.selectFile(file));
+    row.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+      const menu = new import_obsidian2.Menu();
+      this.app.workspace.trigger("file-menu", menu, file, "file-explorer-context-menu");
+      menu.showAtMouseEvent(e);
+    });
   }
   // ── Actions ─────────────────────────────────────────────────────────────
+  toggleExpand(path) {
+    if (this.isExpanded(path)) {
+      this.state.expandedTops = this.state.expandedTops.filter((p) => p !== path);
+    } else {
+      this.state.expandedTops.push(path);
+    }
+    this.plugin.persist();
+    this.renderFolders();
+  }
   selectFolder(entry) {
     const path = entry.folder.path;
-    if (entry.isTop) {
-      const name = entry.folder.name;
-      const expanded = this.state.expandedTops.includes(name);
-      const hasKids = entry.folder.children.some((c) => c instanceof import_obsidian2.TFolder);
-      if (hasKids) {
-        if (this.state.folder === path && expanded) {
-          this.state.expandedTops = this.state.expandedTops.filter((n) => n !== name);
-        } else if (!expanded) {
-          this.state.expandedTops.push(name);
-        }
+    if (entry.isTop && entry.hasChildren) {
+      const expanded = this.isExpanded(path);
+      if (this.state.folder === path && expanded) {
+        this.state.expandedTops = this.state.expandedTops.filter((p) => p !== path);
+      } else if (!expanded) {
+        this.state.expandedTops.push(path);
       }
     }
     this.state.folder = path;
     this.state.file = null;
     this.query = "";
     this.focusedFolderPath = path;
+    this.narrowShowFolders = false;
+    this.updateNarrowMode();
     this.plugin.persist();
     this.render();
   }
@@ -605,6 +702,26 @@ var NavigatorView = class extends import_obsidian2.ItemView {
     this.plugin.persist();
     this.renderFiles();
     this.app.workspace.getLeaf(false).openFile(file);
+  }
+  async createNote() {
+    const folder = this.selectedFolder();
+    if (!folder)
+      return;
+    const base = folder.path ? `${folder.path}/` : "";
+    let name = "Untitled";
+    let n = 1;
+    while (this.app.vault.getAbstractFileByPath(`${base}${name}.md`)) {
+      n++;
+      name = `Untitled ${n}`;
+    }
+    try {
+      const file = await this.app.vault.create(`${base}${name}.md`, "");
+      this.state.file = file.path;
+      this.plugin.persist();
+      await this.app.workspace.getLeaf(false).openFile(file);
+    } catch (err) {
+      new import_obsidian2.Notice(`Could not create note: ${err.message}`);
+    }
   }
   async moveFileTo(path, folder) {
     var _a;
@@ -827,11 +944,17 @@ var TwoPaneNavigatorPlugin = class extends import_obsidian4.Plugin {
       }
     });
     this.app.workspace.onLayoutReady(() => {
-      const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_NAVIGATOR);
-      for (const extra of leaves.slice(1))
-        extra.detach();
-      if (!leaves.length)
-        this.activateView(false);
+      setTimeout(() => {
+        const leaves = [];
+        this.app.workspace.iterateAllLeaves((leaf) => {
+          if (leaf.getViewState().type === VIEW_TYPE_NAVIGATOR)
+            leaves.push(leaf);
+        });
+        for (const extra of leaves.slice(1))
+          extra.detach();
+        if (!leaves.length)
+          this.activateView(false);
+      }, 400);
     });
   }
   async onunload() {

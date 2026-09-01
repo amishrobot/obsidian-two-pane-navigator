@@ -19,6 +19,9 @@ export interface NavigatorState {
   folder: string;
   file: string | null;
   sortByFolder: Record<string, SortKey>;
+  /** Expanded folder paths (any depth). Named for the original top-level-only
+   *  behavior; kept for saved-data compatibility — a top folder's path is its
+   *  name, so old entries still work. */
   expandedTops: string[];
 }
 

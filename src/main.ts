@@ -37,10 +37,17 @@ export default class TwoPaneNavigatorPlugin extends Plugin {
     });
 
     this.app.workspace.onLayoutReady(() => {
-      // Plugin reloads can leave orphaned placeholder leaves behind; keep one.
-      const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_NAVIGATOR);
-      for (const extra of leaves.slice(1)) extra.detach();
-      if (!leaves.length) this.activateView(false);
+      // During a plugin reload the old leaf is briefly a deferred placeholder
+      // that getLeavesOfType misses; give it a beat to resolve, then judge by
+      // view-state type so placeholders count. Keep one leaf, create if none.
+      setTimeout(() => {
+        const leaves: WorkspaceLeaf[] = [];
+        this.app.workspace.iterateAllLeaves((leaf) => {
+          if (leaf.getViewState().type === VIEW_TYPE_NAVIGATOR) leaves.push(leaf);
+        });
+        for (const extra of leaves.slice(1)) extra.detach();
+        if (!leaves.length) this.activateView(false);
+      }, 400);
     });
   }
 

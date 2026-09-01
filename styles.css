@@ -233,6 +233,52 @@
   bottom: 0;
 }
 
+.tpn-folder-chevron {
+  display: flex;
+  align-items: center;
+  width: 10px;
+  flex: none;
+  margin-right: -4px;
+  color: var(--tpn-muted);
+  opacity: 0;
+  transition: opacity 0.12s ease, transform 0.12s ease;
+}
+.tpn-folder-chevron svg {
+  width: 10px;
+  height: 10px;
+}
+.tpn-folder-row:hover .tpn-folder-chevron,
+.tpn-folder-chevron.is-open {
+  opacity: 1;
+}
+.tpn-folder-chevron.is-open {
+  transform: rotate(90deg);
+}
+.tpn-folder-chevron.is-blank {
+  opacity: 0 !important;
+  pointer-events: none;
+}
+
+/* Storage folders (_archive, _system): present, but not competing for the eye. */
+.tpn-folder-row.is-sunk .tpn-folder-name,
+.tpn-folder-row.is-sunk .tpn-folder-count {
+  color: var(--tpn-muted);
+}
+.tpn-folder-row.is-sunk .tpn-folder-marker {
+  opacity: 0.45;
+}
+.tpn-folder-row.is-empty:not(.is-sunk) .tpn-folder-name,
+.tpn-folder-row.is-empty:not(.is-sunk) .tpn-folder-count {
+  color: var(--tpn-line);
+}
+.tpn-folder-row.is-empty .tpn-folder-marker {
+  opacity: 0.35;
+}
+.tpn-folder-row.is-selected.is-sunk .tpn-folder-name,
+.tpn-folder-row.is-selected.is-empty .tpn-folder-name {
+  color: var(--tpn-heading);
+}
+
 .tpn-folder-marker {
   width: 7px;
   height: 7px;
@@ -321,10 +367,60 @@
   border-bottom: 1px solid var(--tpn-hairline);
 }
 
+.tpn-files-crumb {
+  font-family: var(--tpn-font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tpn-muted);
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tpn-files-crumb.is-hidden {
+  display: none;
+}
+
 .tpn-files-title-row {
   display: flex;
   align-items: baseline;
   gap: 8px;
+}
+
+.tpn-back-btn {
+  display: none;
+  align-items: center;
+  align-self: center;
+  color: var(--tpn-muted);
+  cursor: pointer;
+  flex: none;
+}
+.tpn-back-btn svg {
+  width: 14px;
+  height: 14px;
+}
+.tpn-back-btn:hover {
+  color: var(--tpn-heading);
+}
+
+.tpn-new-note {
+  display: flex;
+  align-items: center;
+  align-self: center;
+  color: var(--tpn-muted);
+  cursor: pointer;
+  flex: none;
+  padding: 2px;
+  border-radius: 4px;
+}
+.tpn-new-note svg {
+  width: 13px;
+  height: 13px;
+}
+.tpn-new-note:hover {
+  color: var(--tpn-heading);
+  background: var(--tpn-row-hov-file);
 }
 .tpn-files-title {
   font-family: var(--tpn-font-serif);
@@ -589,6 +685,32 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* ─── Narrow mode (mobile drawer / skinny sidebar) ────────────────────── */
+/* Below ~520px the two panes stack into a drill-down: files fill the width,
+   the back chevron returns to a full-width folder pane. */
+
+.tpn-root.is-narrow .tpn-folders {
+  display: none;
+}
+.tpn-root.is-narrow .tpn-files {
+  flex: 1;
+  min-width: 0;
+}
+.tpn-root.is-narrow .tpn-back-btn {
+  display: flex;
+}
+.tpn-root.is-narrow.show-folders .tpn-folders {
+  display: flex;
+  width: 100%;
+  border-right: none;
+}
+.tpn-root.is-narrow.show-folders .tpn-files {
+  display: none;
+}
+.tpn-root.is-narrow .tpn-files-footer {
+  display: none;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
