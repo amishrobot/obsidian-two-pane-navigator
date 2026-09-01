@@ -70,26 +70,31 @@
   --tpn-group-rule: #383229;
 }
 
+/* Ink — refined (2026-08-31 discipline pass): near-black blue-grey ground,
+   gold #E8B75A as the ONLY interactive color. Because Ink's accent is
+   itself amber, "needs you" moves to coral (--tpn-amber) so urgency never
+   reads as selection. Selection = gold tint + 2px accent bar; hover = the
+   same tint at half strength — the Paper rules, dark polarity. */
 .tpn-theme-ink {
-  --tpn-pane1: #0F1116;
-  --tpn-pane2: #15171D;
-  --tpn-border: #2A2E38;
-  --tpn-border-strong: #353A46;
-  --tpn-hairline: #22252D;
+  --tpn-pane1: #101218;
+  --tpn-pane2: #14161D;
+  --tpn-border: #262A34;
+  --tpn-border-strong: #323744;
+  --tpn-hairline: #1D2029;
   --tpn-line: #4C5262;
-  --tpn-text: #DFE2E8;
-  --tpn-muted-strong: #A7ADBB;
-  --tpn-muted: #868C9C;
-  --tpn-heading: #F6EFE4;
+  --tpn-text: #D7DBE2;
+  --tpn-muted-strong: #9AA1B0;
+  --tpn-muted: #6E7585;
+  --tpn-heading: #F3EDE0;
   --tpn-accent: #E8B75A;
   --tpn-accent2: #F2CD85;
-  --tpn-amber: #E8B75A;
-  --tpn-row-sel-folder: #242832;
-  --tpn-row-hov-folder: #1D2028;
-  --tpn-row-sel-file: #2E333E;
-  --tpn-row-hov-file: #232730;
+  --tpn-amber: #E07856;
+  --tpn-row-sel-folder: color-mix(in srgb, #E8B75A 13%, #101218);
+  --tpn-row-hov-folder: color-mix(in srgb, #E8B75A 6%, #101218);
+  --tpn-row-sel-file: color-mix(in srgb, #E8B75A 13%, #14161D);
+  --tpn-row-hov-file: color-mix(in srgb, #E8B75A 6%, #14161D);
   --tpn-grip: #2B2F39;
-  --tpn-group-rule: #2B2F39;
+  --tpn-group-rule: #262A34;
 }
 
 /* Paper — refined (2026-08-31 handoff): 6 surfaces, 1 accent. Green is the
@@ -975,23 +980,27 @@ body.tpn-theme-racing {
   --color-base-100: #F5EFE3;
 }
 
+/* Ink — refined (2026-08-31): editor a step lighter than the panes,
+   table-header/hover band a step above that. Gold interacts; coral alarms;
+   muted lifted to ~6.6:1, faintest tier reserved for non-essential labels. */
 body.tpn-theme-ink {
-  --jd-deep: #0F1116;
-  --jd-bg: #1B1E25;
-  --jd-surface: #22252D;
-  --jd-raised: #21242D;
-  --jd-hover: #232730;
-  --jd-active: #2E333E;
-  --jd-border: #2A2E38;
-  --jd-border-sub: #22252D;
-  --jd-text: #DFE2E8;
-  --jd-text-muted: #A7ADBB;
-  --jd-text-faint: #868C9C;
-  --jd-heading: #F6EFE4;
+  --jd-deep: #101218;
+  --jd-bg: #171A21;
+  --jd-surface: #1E222B;
+  --jd-raised: #1E222B;
+  --jd-hover: #1B1F27;
+  --jd-active: color-mix(in srgb, #E8B75A 13%, #171A21);
+  --jd-border: #262A34;
+  --jd-border-sub: #1D2029;
+  --jd-text: #D7DBE2;
+  --jd-text-muted: #9AA1B0;
+  --jd-text-faint: #6E7585;
+  --jd-heading: #F3EDE0;
   --jd-accent: #E8B75A;
   --jd-accent-hover: #F2CD85;
   --jd-accent-bg: rgba(232, 183, 90, 0.12);
-  --jd-accent-dim: rgba(232, 183, 90, 0.32);
+  --jd-accent-dim: rgba(232, 183, 90, 0.35);
+  --text-on-accent: #171A21;
   --jd-hue-inbox: #F0A868;
   --jd-hue-church: #E8B75A;
   --jd-hue-career: #7FB0C7;
@@ -1006,24 +1015,24 @@ body.tpn-theme-ink {
   --jd-hue-books: #E08B6A;
   --jd-hue-obsidian: #E8B75A;
   --jd-green: #9EC7A0;
-  --jd-yellow: #E8B75A;
-  --jd-red: #E08B6A;
-  --background-primary-rgb: 27, 30, 37;
-  --background-secondary-rgb: 15, 17, 22;
+  --jd-yellow: #E07856;
+  --jd-red: #E5766A;
+  --background-primary-rgb: 23, 26, 33;
+  --background-secondary-rgb: 16, 18, 24;
   --color-accent-rgb: 232, 183, 90;
   --interactive-accent-rgb: 232, 183, 90;
-  --text-highlight-bg: rgba(232, 183, 90, 0.25);
-  --color-base-00: #0F1116;
-  --color-base-10: #15171D;
-  --color-base-20: #1B1E25;
-  --color-base-25: #22252D;
-  --color-base-30: #2A2E38;
-  --color-base-35: #353A46;
+  --text-highlight-bg: rgba(232, 183, 90, 0.22);
+  --color-base-00: #101218;
+  --color-base-10: #14161D;
+  --color-base-20: #171A21;
+  --color-base-25: #1E222B;
+  --color-base-30: #262A34;
+  --color-base-35: #323744;
   --color-base-40: #4C5262;
-  --color-base-50: #868C9C;
-  --color-base-60: #A7ADBB;
-  --color-base-70: #DFE2E8;
-  --color-base-100: #F6EFE4;
+  --color-base-50: #6E7585;
+  --color-base-60: #9AA1B0;
+  --color-base-70: #D7DBE2;
+  --color-base-100: #F3EDE0;
 }
 
 /* Paper — refined (2026-08-31): warm paper ground, one green accent
