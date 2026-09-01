@@ -10,6 +10,15 @@ const BODY_THEME_CLASSES = [
   'tpn-theme-paper',
 ];
 
+/** Obsidian base color scheme each palette requires: 'obsidian' = dark,
+ *  'moonstone' = light. Keyed by --jd-bg polarity, not taste. */
+const THEME_POLARITY: Record<string, 'obsidian' | 'moonstone'> = {
+  macchiato: 'obsidian',
+  racing: 'obsidian',
+  ink: 'obsidian',
+  paper: 'moonstone',
+};
+
 export default class TwoPaneNavigatorPlugin extends Plugin {
   settings: NavigatorSettings = { ...DEFAULT_SETTINGS };
   state: NavigatorState = { ...DEFAULT_STATE };
@@ -62,6 +71,22 @@ export default class TwoPaneNavigatorPlugin extends Plugin {
   applyBodyTheme(): void {
     document.body.classList.remove(...BODY_THEME_CLASSES);
     document.body.classList.add(`tpn-theme-${this.settings.theme}`);
+    this.syncBaseScheme();
+  }
+
+  /** The base scheme carries polarity assumptions the palette must agree
+   *  with — callout blend modes, native menus, scrollbars all key off
+   *  theme-dark/theme-light. A dark base under Paper erased callout photos
+   *  in reading view, so while a palette is active it owns the base scheme.
+   *  setTheme/changeTheme are internal API; both are guarded so a rename in
+   *  a future Obsidian degrades to a no-op, not a crash. */
+  private syncBaseScheme(): void {
+    const want = THEME_POLARITY[this.settings.theme] ?? 'obsidian';
+    const app = this.app as any;
+    if (app.vault?.getConfig?.('theme') === want) return;
+    (app.setTheme ?? app.changeTheme)?.call(app, want);
+    app.vault?.setConfig?.('theme', want);
+    app.workspace.trigger('css-change');
   }
 
   getView(): NavigatorView | null {
