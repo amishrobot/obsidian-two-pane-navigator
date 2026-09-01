@@ -586,8 +586,12 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-family: var(--tpn-font-serif);
-  font-size: 13px;
+  /* UI sans, not the serif: file names are mostly dated kebab-slugs, and
+     Baskerville makes hyphenated machine names read busy. The serif stays
+     on the pane headers (.tpn-vault-name, .tpn-files-title) for flavor. */
+  font-family: var(--tpn-font-ui);
+  font-weight: 500;
+  font-size: 12.5px;
   line-height: 1.4;
   letter-spacing: -0.005em;
   color: var(--tpn-text);
