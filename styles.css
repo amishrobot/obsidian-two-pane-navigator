@@ -743,6 +743,12 @@ body.tpn-theme-paper {
    chosen theme is authoritative regardless of base mode or Style Settings. */
 body.theme-dark[class*='tpn-theme-'],
 body.theme-light[class*='tpn-theme-'] {
+  /* Obsidian's base-scheme callout blend (lighten in dark, darken in light)
+     assumes stock backdrops. Under a TPN palette the backdrop can be the
+     opposite polarity of the base scheme — dark base + Paper erased photos
+     inside callouts in reading view (every pixel darker than the page
+     lightens away). TPN owns all backgrounds, so composite normally. */
+  --callout-blend-mode: normal;
   /* Obsidian core */
   --background-primary: var(--jd-bg);
   --background-primary-alt: var(--jd-surface);
