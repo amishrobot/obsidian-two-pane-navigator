@@ -315,6 +315,18 @@ export class NavigatorView extends ItemView {
     return this.state.sortByFolder[this.state.folder] ?? 'modified';
   }
 
+  /** Notes under this folder's subfolders. The folder pane counts a folder
+   *  recursively; this pane lists only its direct notes, because the design
+   *  is explicit that folders never appear in the file list. Without a number
+   *  for the difference, "Career 58" beside "4 notes" reads as a bug. */
+  private nestedNoteCount(folder: TFolder): number {
+    let n = 0;
+    for (const c of folder.children) {
+      if (c instanceof TFolder) n += this.noteCount(c);
+    }
+    return n;
+  }
+
   private filesOf(folder: TFolder): TFile[] {
     let files = folder.children.filter((c): c is TFile => c instanceof TFile);
     const q = this.query.trim().toLowerCase();
@@ -451,7 +463,25 @@ export class NavigatorView extends ItemView {
 
     const files = this.filesOf(folder);
     this.visibleFiles = files;
-    this.filesHeaderCountEl.setText(`${files.length} ${files.length === 1 ? 'note' : 'notes'}`);
+    this.filesHeaderCountEl.empty();
+    this.filesHeaderCountEl.createSpan({
+      text: `${files.length} ${files.length === 1 ? 'note' : 'notes'}`,
+    });
+    // Only with no active filter: mixing a filtered count with a total the
+    // filter never touched would be its own small lie.
+    const nested = this.query.trim() ? 0 : this.nestedNoteCount(folder);
+    if (nested > 0) {
+      this.filesHeaderCountEl.createSpan({
+        cls: 'tpn-files-count-nested',
+        text: ` \u00B7 ${nested.toLocaleString()} nested`,
+      });
+      this.filesHeaderCountEl.setAttr(
+        'aria-label',
+        `${nested.toLocaleString()} more notes in subfolders of ${folder.name}`
+      );
+    } else {
+      this.filesHeaderCountEl.removeAttribute('aria-label');
+    }
 
     if (this.filterInputEl.value !== this.query) this.filterInputEl.value = this.query;
     this.renderSorts();
@@ -605,7 +635,10 @@ export class NavigatorView extends ItemView {
 
   private selectFolder(entry: FlatFolder): void {
     const path = entry.folder.path;
-    if (entry.isTop && entry.hasChildren) {
+    // Any folder with children toggles on click, not just top-level ones.
+    // Gating this to isTop made a nested parent (Personal/Career, ten
+    // subfolders) behave exactly like a leaf: click it, nothing opens.
+    if (entry.hasChildren) {
       const expanded = this.isExpanded(path);
       if (this.state.folder === path && expanded) {
         this.state.expandedTops = this.state.expandedTops.filter((p) => p !== path);

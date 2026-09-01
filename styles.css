@@ -257,7 +257,10 @@
   flex: none;
   margin-right: -4px;
   color: var(--tpn-muted);
-  opacity: 0;
+  /* Visible at rest: a collapsed folder that hides children must not look
+     identical to a leaf. Quiet, not loud - it sits left of the marker and
+     should never out-shout the folder name. */
+  opacity: 0.5;
   transition: opacity 0.12s ease, transform 0.12s ease;
 }
 .tpn-folder-chevron svg {
@@ -492,6 +495,13 @@
   font-size: 10px;
   font-variant-numeric: tabular-nums;
   color: var(--tpn-muted);
+  flex: none;
+  white-space: nowrap;
+}
+/* The remainder living in subfolders. Dimmer than the direct count: it is a
+   pointer to the folder pane, not a number about this list. */
+.tpn-files-count-nested {
+  color: var(--tpn-line);
 }
 
 .tpn-filter {
