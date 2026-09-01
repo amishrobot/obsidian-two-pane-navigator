@@ -427,6 +427,18 @@ var NavigatorView = class extends import_obsidian2.ItemView {
     var _a;
     return (_a = this.state.sortByFolder[this.state.folder]) != null ? _a : "modified";
   }
+  /** Notes under this folder's subfolders. The folder pane counts a folder
+   *  recursively; this pane lists only its direct notes, because the design
+   *  is explicit that folders never appear in the file list. Without a number
+   *  for the difference, "Career 58" beside "4 notes" reads as a bug. */
+  nestedNoteCount(folder) {
+    let n = 0;
+    for (const c of folder.children) {
+      if (c instanceof import_obsidian2.TFolder)
+        n += this.noteCount(c);
+    }
+    return n;
+  }
   filesOf(folder) {
     let files = folder.children.filter((c) => c instanceof import_obsidian2.TFile);
     const q = this.query.trim().toLowerCase();
@@ -554,7 +566,23 @@ var NavigatorView = class extends import_obsidian2.ItemView {
     this.filesHeaderNameEl.setText(folder.name || this.app.vault.getName());
     const files = this.filesOf(folder);
     this.visibleFiles = files;
-    this.filesHeaderCountEl.setText(`${files.length} ${files.length === 1 ? "note" : "notes"}`);
+    this.filesHeaderCountEl.empty();
+    this.filesHeaderCountEl.createSpan({
+      text: `${files.length} ${files.length === 1 ? "note" : "notes"}`
+    });
+    const nested = this.query.trim() ? 0 : this.nestedNoteCount(folder);
+    if (nested > 0) {
+      this.filesHeaderCountEl.createSpan({
+        cls: "tpn-files-count-nested",
+        text: ` \xB7 ${nested.toLocaleString()} nested`
+      });
+      this.filesHeaderCountEl.setAttr(
+        "aria-label",
+        `${nested.toLocaleString()} more notes in subfolders of ${folder.name}`
+      );
+    } else {
+      this.filesHeaderCountEl.removeAttribute("aria-label");
+    }
     if (this.filterInputEl.value !== this.query)
       this.filterInputEl.value = this.query;
     this.renderSorts();
@@ -688,7 +716,7 @@ var NavigatorView = class extends import_obsidian2.ItemView {
   }
   selectFolder(entry) {
     const path = entry.folder.path;
-    if (entry.isTop && entry.hasChildren) {
+    if (entry.hasChildren) {
       const expanded = this.isExpanded(path);
       if (this.state.folder === path && expanded) {
         this.state.expandedTops = this.state.expandedTops.filter((p) => p !== path);
