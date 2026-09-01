@@ -369,9 +369,17 @@ var NavigatorView = class extends import_obsidian2.ItemView {
   }
   flattenFolders() {
     const out = [];
+    const childRank = (f) => SUNK_NAMES.has(f.name.toLowerCase()) ? 1 : 0;
     const walk = (folder, depth, top, sunk) => {
-      const kids = folder.children.filter((c) => c instanceof import_obsidian2.TFolder).sort((a, b) => a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1);
+      const kids = folder.children.filter((c) => c instanceof import_obsidian2.TFolder).sort((a, b) => {
+        const ra = childRank(a);
+        const rb = childRank(b);
+        if (ra !== rb)
+          return ra - rb;
+        return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1;
+      });
       const expanded = this.isExpanded(folder.path);
+      const isSunk = sunk || SUNK_NAMES.has(folder.name.toLowerCase());
       out.push({
         folder,
         depth,
@@ -379,12 +387,12 @@ var NavigatorView = class extends import_obsidian2.ItemView {
         isTop: depth === 0,
         hasChildren: kids.length > 0,
         expanded,
-        sunk
+        sunk: isSunk
       });
       if (!expanded)
         return;
       for (const kid of kids)
-        walk(kid, depth + 1, top, sunk);
+        walk(kid, depth + 1, top, isSunk);
     };
     for (const top of this.topFolders()) {
       walk(top, 0, top.name, SUNK_NAMES.has(top.name.toLowerCase()));

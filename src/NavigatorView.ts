@@ -257,11 +257,19 @@ export class NavigatorView extends ItemView {
 
   private flattenFolders(): FlatFolder[] {
     const out: FlatFolder[] = [];
+    // Nested archives sink below their siblings, same as top level.
+    const childRank = (f: TFolder) => (SUNK_NAMES.has(f.name.toLowerCase()) ? 1 : 0);
     const walk = (folder: TFolder, depth: number, top: string, sunk: boolean) => {
       const kids = folder.children
         .filter((c): c is TFolder => c instanceof TFolder)
-        .sort((a, b) => (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1));
+        .sort((a, b) => {
+          const ra = childRank(a);
+          const rb = childRank(b);
+          if (ra !== rb) return ra - rb;
+          return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1;
+        });
       const expanded = this.isExpanded(folder.path);
+      const isSunk = sunk || SUNK_NAMES.has(folder.name.toLowerCase());
       out.push({
         folder,
         depth,
@@ -269,10 +277,10 @@ export class NavigatorView extends ItemView {
         isTop: depth === 0,
         hasChildren: kids.length > 0,
         expanded,
-        sunk,
+        sunk: isSunk,
       });
       if (!expanded) return;
-      for (const kid of kids) walk(kid, depth + 1, top, sunk);
+      for (const kid of kids) walk(kid, depth + 1, top, isSunk);
     };
     for (const top of this.topFolders()) {
       walk(top, 0, top.name, SUNK_NAMES.has(top.name.toLowerCase()));
