@@ -296,30 +296,51 @@
   color: var(--tpn-heading);
 }
 
-/* Pixel bullets with a job (handoff change 01): filled accent = expanded or
-   active, hollow taupe = collapsed, 4px tick = leaf/child. Squares, not
-   rounded — they're the theme's signature. */
+/* Pixel bullets with a job (handoff change 01): hollow = collapsed, filled
+   = expanded/active, small tick = child. Squares, not rounded — they're the
+   theme's signature. The COLOR comes from the per-folder hue (--tpn-hue,
+   set per row; the colorCodeFolders setting collapses it to the accent), so
+   sections keep their identity until real section labels exist to carry the
+   grouping (Josh, 2026-08-31). */
 .tpn-folder-marker {
   width: 7px;
   height: 7px;
   border-radius: 0;
   flex: none;
   background: transparent;
-  box-shadow: inset 0 0 0 1.5px var(--tpn-line);
+  box-shadow: inset 0 0 0 1.5px var(--tpn-hue);
 }
 .tpn-folder-row.is-selected .tpn-folder-marker,
 .tpn-folder-row:has(.tpn-folder-chevron.is-open) .tpn-folder-marker {
-  background: var(--tpn-accent);
+  background: var(--tpn-hue);
   box-shadow: none;
 }
 .tpn-folder-row.is-child .tpn-folder-marker {
   width: 4px;
   height: 4px;
-  background: var(--tpn-grip);
+  background: color-mix(in srgb, var(--tpn-hue) 60%, transparent);
   box-shadow: none;
 }
 .tpn-folder-row.is-child.is-selected .tpn-folder-marker,
 .tpn-folder-row.is-child:has(.tpn-folder-chevron.is-open) .tpn-folder-marker {
+  background: var(--tpn-hue);
+}
+
+/* Paper's reviewed artboard commits to the restrained two-color version:
+   hollow taupe / filled green / taupe ticks. Palette-specific on purpose. */
+.tpn-theme-paper .tpn-folder-marker {
+  box-shadow: inset 0 0 0 1.5px var(--tpn-line);
+}
+.tpn-theme-paper .tpn-folder-row.is-selected .tpn-folder-marker,
+.tpn-theme-paper .tpn-folder-row:has(.tpn-folder-chevron.is-open) .tpn-folder-marker {
+  background: var(--tpn-accent);
+  box-shadow: none;
+}
+.tpn-theme-paper .tpn-folder-row.is-child .tpn-folder-marker {
+  background: var(--tpn-grip);
+}
+.tpn-theme-paper .tpn-folder-row.is-child.is-selected .tpn-folder-marker,
+.tpn-theme-paper .tpn-folder-row.is-child:has(.tpn-folder-chevron.is-open) .tpn-folder-marker {
   background: var(--tpn-accent);
 }
 
