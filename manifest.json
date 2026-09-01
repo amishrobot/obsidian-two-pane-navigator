@@ -1,7 +1,7 @@
 {
   "id": "two-pane-navigator",
   "name": "Two-Pane Navigator",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "minAppVersion": "1.4.0",
   "description": "Two-pane vault navigator: a stable folder pane and a rich file list, replacing the left-dock file tree",
   "author": "Josh Penrod",
