@@ -17,6 +17,22 @@
    counts, section labels. Every string belongs to exactly one. */
 @import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
+/* Type scale — JoshOS design system 4a (Mobile). Sizes derive from the
+   reader's own font size (Obsidian Appearance > Font size) so the navigator
+   grows with the notes beside it; max() holds each role above its floor, and
+   the is-mobile block below raises every floor for the phone. */
+.tpn-root {
+  --tpn-reader: var(--font-text-size, 16px);
+  --tpn-t-title:   max(16px,   calc(var(--tpn-reader) * 0.92));
+  --tpn-t-heading: max(14px,   calc(var(--tpn-reader) * 0.80));
+  --tpn-t-body:    max(13px,   calc(var(--tpn-reader) * 0.74));
+  --tpn-t-body-sm: max(12.5px, calc(var(--tpn-reader) * 0.71));
+  --tpn-t-meta:    max(11px,   calc(var(--tpn-reader) * 0.62));
+  --tpn-t-label:   max(10px,   calc(var(--tpn-reader) * 0.58));
+  --tpn-t-eyebrow: max(9.5px,  calc(var(--tpn-reader) * 0.56));
+  --tpn-tap: 0px;
+}
+
 .tpn-root {
   --tpn-font-serif: 'Newsreader', Georgia, serif;
   --tpn-font-ui: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -175,14 +191,14 @@
 
 .tpn-vault-name {
   font-family: var(--tpn-font-serif);
-  font-size: 14px;
+  font-size: var(--tpn-t-heading);
   color: var(--tpn-heading);
   letter-spacing: 0.01em;
 }
 
 .tpn-vault-sub {
   font-family: var(--tpn-font-mono);
-  font-size: 10px;
+  font-size: var(--tpn-t-eyebrow);
   color: var(--tpn-muted);
   letter-spacing: 0.04em;
 }
@@ -357,7 +373,7 @@
    labels now own; the count column is the only right-hand signal. */
 .tpn-folder-row.is-top .tpn-folder-name {
   font-family: var(--tpn-font-ui);
-  font-size: 13px;
+  font-size: var(--tpn-t-body);
   font-weight: 450;
   color: var(--tpn-text);
 }
@@ -366,7 +382,7 @@
 }
 .tpn-folder-row.is-child .tpn-folder-name {
   font-family: var(--tpn-font-ui);
-  font-size: 12.5px;
+  font-size: var(--tpn-t-body-sm);
   font-weight: 450;
   color: var(--tpn-muted-strong);
 }
@@ -376,7 +392,7 @@
 
 .tpn-folder-count {
   font-family: var(--tpn-font-mono);
-  font-size: 10px;
+  font-size: var(--tpn-t-label);
   font-variant-numeric: tabular-nums;
   color: var(--tpn-muted);
 }
@@ -393,12 +409,12 @@
 }
 .tpn-footer-label {
   font-family: var(--tpn-font-mono);
-  font-size: 10px;
+  font-size: var(--tpn-t-eyebrow);
   color: var(--tpn-muted);
   cursor: pointer;
 }
 .tpn-footer-plus {
-  font-size: 14px;
+  font-size: var(--tpn-t-heading);
   color: var(--tpn-muted);
   cursor: pointer;
 }
@@ -428,7 +444,7 @@
 
 .tpn-files-crumb {
   font-family: var(--tpn-font-mono);
-  font-size: 9.5px;
+  font-size: var(--tpn-t-eyebrow);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--tpn-muted);
@@ -483,7 +499,7 @@
 }
 .tpn-files-title {
   font-family: var(--tpn-font-serif);
-  font-size: 16px;
+  font-size: var(--tpn-t-title);
   color: var(--tpn-heading);
   flex: 1;
   overflow: hidden;
@@ -492,7 +508,7 @@
 }
 .tpn-files-count {
   font-family: var(--tpn-font-mono);
-  font-size: 10px;
+  font-size: var(--tpn-t-label);
   font-variant-numeric: tabular-nums;
   color: var(--tpn-muted);
   flex: none;
@@ -534,7 +550,7 @@
   box-shadow: none;
   color: var(--tpn-text);
   font-family: var(--tpn-font-ui);
-  font-size: 12.5px;
+  font-size: max(16px, var(--tpn-t-body-sm));
   padding: 0;
   height: auto;
 }
@@ -550,7 +566,7 @@
   flex: 1;
   text-align: center;
   font-family: var(--tpn-font-mono);
-  font-size: 10px;
+  font-size: var(--tpn-t-eyebrow);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 4px 0;
@@ -584,7 +600,7 @@
 }
 .tpn-group-label {
   font-family: var(--tpn-font-mono);
-  font-size: 9.5px;
+  font-size: var(--tpn-t-eyebrow);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--tpn-muted-strong);
@@ -596,7 +612,7 @@
 }
 .tpn-group-count {
   font-family: var(--tpn-font-mono);
-  font-size: 9.5px;
+  font-size: var(--tpn-t-label);
   font-variant-numeric: tabular-nums;
   color: var(--tpn-muted-strong);
 }
@@ -657,7 +673,7 @@
      on the pane headers (.tpn-vault-name, .tpn-files-title) for flavor. */
   font-family: var(--tpn-font-ui);
   font-weight: 500;
-  font-size: 12.5px;
+  font-size: var(--tpn-t-body-sm);
   line-height: 1.4;
   letter-spacing: -0.005em;
   color: var(--tpn-text);
@@ -684,7 +700,7 @@
 }
 .tpn-file-when {
   font-family: var(--tpn-font-mono);
-  font-size: 10px;
+  font-size: var(--tpn-t-meta);
   font-variant-numeric: tabular-nums;
   color: var(--tpn-muted-strong);
   flex: none;
@@ -701,7 +717,7 @@
 }
 .tpn-file-size {
   font-family: var(--tpn-font-mono);
-  font-size: 10px;
+  font-size: var(--tpn-t-meta);
   font-variant-numeric: tabular-nums;
   color: var(--tpn-muted);
   flex: none;
@@ -713,7 +729,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-family: var(--tpn-font-ui);
-  font-size: 11px;
+  font-size: var(--tpn-t-body-sm);
   color: var(--tpn-muted);
 }
 .tpn-file-row.is-selected .tpn-file-snippet {
@@ -723,7 +739,7 @@
 /* Deliberate contrast exception: hover-revealed drag affordance. */
 .tpn-file-grip {
   font-family: var(--tpn-font-mono);
-  font-size: 11px;
+  font-size: var(--tpn-t-meta);
   line-height: 1.6;
   flex: none;
   color: var(--tpn-grip);
@@ -739,7 +755,7 @@
 .tpn-empty {
   padding: 40px 20px;
   text-align: center;
-  font-size: 12.5px;
+  font-size: var(--tpn-t-body-sm);
   color: var(--tpn-muted-strong);
   line-height: 1.6;
 }
@@ -751,7 +767,7 @@
   align-items: center;
   justify-content: space-between;
   font-family: var(--tpn-font-mono);
-  font-size: 10px;
+  font-size: var(--tpn-t-eyebrow);
   color: var(--tpn-muted);
   gap: 8px;
 }
@@ -759,6 +775,68 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* ─── Mobile ──────────────────────────────────────────────────────────── */
+/* Design system 4a: the ramp goes up, never down. Body 17px, mono labels 11
+   and eyebrows 12, every row a 48px target. Narrow mode above already stacks
+   the panes; this block is purely type and touch. */
+
+body.is-mobile .tpn-root {
+  --tpn-t-title:   max(22px, calc(var(--tpn-reader) * 1.20));
+  --tpn-t-heading: max(18px, calc(var(--tpn-reader) * 1.00));
+  --tpn-t-body:    max(17px, calc(var(--tpn-reader) * 0.95));
+  --tpn-t-body-sm: max(16px, calc(var(--tpn-reader) * 0.90));
+  --tpn-t-meta:    max(15px, calc(var(--tpn-reader) * 0.85));
+  --tpn-t-label:   max(11px, calc(var(--tpn-reader) * 0.64));
+  --tpn-t-eyebrow: max(12px, calc(var(--tpn-reader) * 0.68));
+  --tpn-tap: 48px;
+}
+
+body.is-mobile .tpn-folder-row,
+body.is-mobile .tpn-file-row {
+  min-height: var(--tpn-tap);
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+body.is-mobile .tpn-footer-label,
+body.is-mobile .tpn-footer-plus {
+  min-height: var(--tpn-tap);
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Icon-only controls keep their 14px glyph but get a real box around it. */
+body.is-mobile .tpn-back-btn,
+body.is-mobile .tpn-new-note {
+  min-width: 44px;
+  min-height: 44px;
+  justify-content: center;
+}
+body.is-mobile .tpn-back-btn svg,
+body.is-mobile .tpn-new-note svg {
+  width: 20px;
+  height: 20px;
+}
+
+body.is-mobile .tpn-filter input {
+  min-height: var(--tpn-tap);
+}
+
+/* The breadcrumb wraps instead of ellipsing — a deep folder path is exactly
+   the string you needed to read. */
+body.is-mobile .tpn-files-crumb {
+  white-space: normal;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  line-height: 1.35;
+}
+
+/* Rule M4: overflow trims content, not type. The byte count is the least
+   useful column in a phone-width row, so it goes rather than the type. */
+body.is-mobile .tpn-file-size {
+  display: none;
 }
 
 /* ─── Narrow mode (mobile drawer / skinny sidebar) ────────────────────── */
@@ -1284,4 +1362,35 @@ body[class*='tpn-theme-'] .member-profile h2 {
   border: none;
   margin-top: 2.2em;
   margin-bottom: 0.6em;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE — READING VIEW
+   The member-card callout and profile headings are the same two-up-grid and
+   mono-eyebrow patterns as the navigator, rendered inside a note. Design
+   system 4a applies to them identically: 112px label track, 11px labels,
+   17px values, and values that wrap rather than ellipse.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+body.is-mobile[class*='tpn-theme-'] .callout[data-callout='member-card'] > .callout-content > ul > li {
+  grid-template-columns: 112px 1fr;
+  font-size: max(17px, 0.95em);
+  line-height: 1.45;
+  padding: 10px 0;
+}
+
+body.is-mobile[class*='tpn-theme-'] .callout[data-callout='member-card'] li > strong {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+/* A long address or a ministering list grows its row instead of running out
+   of the card. */
+body.is-mobile[class*='tpn-theme-'] .callout[data-callout='member-card'] li {
+  overflow-wrap: anywhere;
+}
+
+body.is-mobile[class*='tpn-theme-'] .member-profile h2 {
+  font-size: 12px;
+  letter-spacing: 0.12em;
 }
