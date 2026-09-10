@@ -1394,8 +1394,11 @@ body[class*='tpn-theme-'] {
   --checkbox-radius: 0;
 }
 
-body[class*='tpn-theme-'] .markdown-rendered h1,
-body[class*='tpn-theme-'] .markdown-rendered h2 {
+/* The whole heading ramp, not just the top two. Styling h1 and h2 at weight
+   500 and leaving h3-h6 on Obsidian's 600 inverted the hierarchy: in the
+   reading digest an article title (h3) outweighed the section it sat under
+   (h2), because heavier reads as bigger even when it is smaller. */
+body[class*='tpn-theme-'] .markdown-rendered :is(h1, h2, h3, h4, h5, h6) {
   font-family: var(--jd-font-serif);
   font-weight: 500;
   letter-spacing: -0.01em;

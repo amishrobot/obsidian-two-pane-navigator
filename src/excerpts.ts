@@ -54,7 +54,14 @@ export function firstContentLine(raw: string): string {
     if (t.startsWith('#')) continue; // headings and tags-only lines
     if (/^(-{3,}|\*{3,}|_{3,})$/.test(t)) continue; // horizontal rules
     if (t.startsWith('```')) continue;
-    const clean = t
+    // Generated notes now open with structural HTML (an eyebrow, a hero
+    // band). Left alone the preview reads `<p class="da-eyebrow">2 pieces</p`
+    // — markup where the sentence should be. Strip tags, then fall through
+    // to the next line if nothing readable is left, so an opening <div> does
+    // not eat the excerpt entirely.
+    const detagged = t.replace(/<[^>]*>/g, '').trim();
+    if (!detagged) continue;
+    const clean = detagged
       .replace(/!\[\[([^\]]*)\]\]/g, '$1')
       .replace(/\[\[([^\]|]*)\|?([^\]]*)\]\]/g, (_m, a, b) => b || a)
       .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
