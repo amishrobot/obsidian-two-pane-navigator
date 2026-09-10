@@ -77,7 +77,10 @@ function firstContentLine(raw) {
       continue;
     if (t.startsWith("```"))
       continue;
-    const clean = t.replace(/!\[\[([^\]]*)\]\]/g, "$1").replace(/\[\[([^\]|]*)\|?([^\]]*)\]\]/g, (_m, a, b) => b || a).replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/[*_`>]/g, "").replace(/^[-+]\s+/, "").replace(/^\d+\.\s+/, "").trim();
+    const detagged = t.replace(/<[^>]*>/g, "").trim();
+    if (!detagged)
+      continue;
+    const clean = detagged.replace(/!\[\[([^\]]*)\]\]/g, "$1").replace(/\[\[([^\]|]*)\|?([^\]]*)\]\]/g, (_m, a, b) => b || a).replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/[*_`>]/g, "").replace(/^[-+]\s+/, "").replace(/^\d+\.\s+/, "").trim();
     if (/^\[!/.test(clean))
       continue;
     if (clean)
