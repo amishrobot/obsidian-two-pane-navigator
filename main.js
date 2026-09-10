@@ -115,6 +115,15 @@ var HUES = {
     _system: "#7D8393",
     _archive: "#7D8393"
   },
+  charcoal: {
+    _inbox: "#D2A04A",
+    Church: "#8FB59A",
+    Work: "#7FA8C9",
+    Personal: "#86B584",
+    Library: "#D0885C",
+    _system: "#7D776C",
+    _archive: "#7D776C"
+  },
   paper: {
     _inbox: "#8A6A12",
     Church: "#004225",
@@ -129,13 +138,15 @@ var NEUTRAL = {
   macchiato: "#6E738D",
   racing: "#7A7266",
   ink: "#7D8393",
-  paper: "#8D887B"
+  paper: "#8D887B",
+  charcoal: "#7D776C"
 };
 var ACCENT = {
   macchiato: "#C6A0F6",
   racing: "#3F9C62",
   ink: "#E8B75A",
-  paper: "#004225"
+  paper: "#004225",
+  charcoal: "#8FB59A"
 };
 function hueFor(theme, topFolder, colorCode) {
   var _a;
@@ -265,7 +276,13 @@ var NavigatorView = class extends import_obsidian2.ItemView {
   }
   applyThemeClass() {
     const root = this.contentEl;
-    root.removeClasses(["tpn-theme-macchiato", "tpn-theme-racing", "tpn-theme-ink", "tpn-theme-paper"]);
+    root.removeClasses([
+      "tpn-theme-macchiato",
+      "tpn-theme-racing",
+      "tpn-theme-ink",
+      "tpn-theme-paper",
+      "tpn-theme-charcoal"
+    ]);
     root.addClass(`tpn-theme-${this.settings.theme}`);
   }
   updateNarrowMode() {
@@ -896,7 +913,8 @@ var NavigatorSettingTab = class extends import_obsidian3.PluginSettingTab {
         macchiato: "Macchiato (current vault palette)",
         racing: "Racing (British racing green)",
         ink: "Ink (neutral, amber accent)",
-        paper: "Paper (light)"
+        paper: "Paper (light)",
+        charcoal: "Charcoal (Paper, dark)"
       }).setValue(this.plugin.settings.theme).onChange(async (value) => {
         var _a;
         this.plugin.settings.theme = value;
@@ -951,13 +969,15 @@ var BODY_THEME_CLASSES = [
   "tpn-theme-macchiato",
   "tpn-theme-racing",
   "tpn-theme-ink",
-  "tpn-theme-paper"
+  "tpn-theme-paper",
+  "tpn-theme-charcoal"
 ];
 var THEME_POLARITY = {
   macchiato: "obsidian",
   racing: "obsidian",
   ink: "obsidian",
-  paper: "moonstone"
+  paper: "moonstone",
+  charcoal: "obsidian"
 };
 var TwoPaneNavigatorPlugin = class extends import_obsidian4.Plugin {
   constructor() {
