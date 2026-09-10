@@ -139,7 +139,13 @@ export class NavigatorView extends ItemView {
 
   private applyThemeClass(): void {
     const root = this.contentEl;
-    root.removeClasses(['tpn-theme-macchiato', 'tpn-theme-racing', 'tpn-theme-ink', 'tpn-theme-paper']);
+    root.removeClasses([
+      'tpn-theme-macchiato',
+      'tpn-theme-racing',
+      'tpn-theme-ink',
+      'tpn-theme-paper',
+      'tpn-theme-charcoal',
+    ]);
     root.addClass(`tpn-theme-${this.settings.theme}`);
   }
 

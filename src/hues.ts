@@ -31,6 +31,15 @@ const HUES: Record<ThemeName, Record<string, string>> = {
     _system: '#7D8393',
     _archive: '#7D8393',
   },
+  charcoal: {
+    _inbox: '#D2A04A',
+    Church: '#8FB59A',
+    Work: '#7FA8C9',
+    Personal: '#86B584',
+    Library: '#D0885C',
+    _system: '#7D776C',
+    _archive: '#7D776C',
+  },
   paper: {
     _inbox: '#8A6A12',
     Church: '#004225',
@@ -47,6 +56,7 @@ const NEUTRAL: Record<ThemeName, string> = {
   racing: '#7A7266',
   ink: '#7D8393',
   paper: '#8D887B',
+  charcoal: '#7D776C',
 };
 
 const ACCENT: Record<ThemeName, string> = {
@@ -54,6 +64,7 @@ const ACCENT: Record<ThemeName, string> = {
   racing: '#3F9C62',
   ink: '#E8B75A',
   paper: '#004225',
+  charcoal: '#8FB59A',
 };
 
 export function hueFor(theme: ThemeName, topFolder: string, colorCode: boolean): string {

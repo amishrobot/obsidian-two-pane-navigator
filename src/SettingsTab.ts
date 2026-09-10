@@ -21,6 +21,7 @@ export class NavigatorSettingTab extends PluginSettingTab {
             racing: 'Racing (British racing green)',
             ink: 'Ink (neutral, amber accent)',
             paper: 'Paper (light)',
+            charcoal: 'Charcoal (Paper, dark)',
           })
           .setValue(this.plugin.settings.theme)
           .onChange(async (value) => {

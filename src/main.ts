@@ -8,6 +8,7 @@ const BODY_THEME_CLASSES = [
   'tpn-theme-racing',
   'tpn-theme-ink',
   'tpn-theme-paper',
+  'tpn-theme-charcoal',
 ];
 
 /** Obsidian base color scheme each palette requires: 'obsidian' = dark,
@@ -17,6 +18,7 @@ const THEME_POLARITY: Record<string, 'obsidian' | 'moonstone'> = {
   racing: 'obsidian',
   ink: 'obsidian',
   paper: 'moonstone',
+  charcoal: 'obsidian',
 };
 
 export default class TwoPaneNavigatorPlugin extends Plugin {

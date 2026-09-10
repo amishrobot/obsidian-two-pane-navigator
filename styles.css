@@ -28,8 +28,8 @@
   --tpn-t-body:    max(13px,   calc(var(--tpn-reader) * 0.74));
   --tpn-t-body-sm: max(12.5px, calc(var(--tpn-reader) * 0.71));
   --tpn-t-meta:    max(11px,   calc(var(--tpn-reader) * 0.62));
-  --tpn-t-label:   max(10px,   calc(var(--tpn-reader) * 0.58));
-  --tpn-t-eyebrow: max(9.5px,  calc(var(--tpn-reader) * 0.56));
+  --tpn-t-label:   max(10.5px, calc(var(--tpn-reader) * 0.60));
+  --tpn-t-eyebrow: max(10px,   calc(var(--tpn-reader) * 0.56));
   --tpn-tap: 0px;
 }
 
@@ -125,7 +125,7 @@
   --tpn-line: #B0A797;
   --tpn-text: #2A2723;
   --tpn-muted-strong: #7C7466;
-  --tpn-muted: #A39A89;
+  --tpn-muted: #8E8574;
   --tpn-heading: #241F19;
   --tpn-accent: #4C6A52;
   --tpn-accent2: #2F4636;
@@ -136,6 +136,31 @@
   --tpn-row-hov-file: color-mix(in srgb, #E6EAE2 45%, #F4F1E9);
   --tpn-grip: #D3CCBA;
   --tpn-group-rule: #E2DCCD;
+}
+
+/* Charcoal — Paper's dark mode (2026-09-10 refinement). Same warm hue family
+   inverted, same one green / one amber; every tier re-tuned to Paper's
+   contrast targets on #24221E. */
+.tpn-theme-charcoal {
+  --tpn-pane1: #1B1917;
+  --tpn-pane2: #1F1D1A;
+  --tpn-border: #35322C;
+  --tpn-border-strong: #423E36;
+  --tpn-hairline: #2E2B26;
+  --tpn-line: #6A645A;
+  --tpn-text: #E4DFD4;
+  --tpn-muted-strong: #B3AB9C;
+  --tpn-muted: #A39B8C;
+  --tpn-heading: #F2EDE3;
+  --tpn-accent: #8FB59A;
+  --tpn-accent2: #A9CDB2;
+  --tpn-amber: #D2A04A;
+  --tpn-row-sel-folder: #26302A;
+  --tpn-row-hov-folder: color-mix(in srgb, #26302A 45%, #1B1917);
+  --tpn-row-sel-file: #26302A;
+  --tpn-row-hov-file: color-mix(in srgb, #26302A 45%, #1F1D1A);
+  --tpn-grip: #4A453D;
+  --tpn-group-rule: #35322C;
 }
 
 /* ─── Layout ──────────────────────────────────────────────────────────── */
@@ -362,6 +387,22 @@
 .tpn-theme-paper .tpn-folder-row.is-child:has(.tpn-folder-chevron.is-open) .tpn-folder-marker {
   background: var(--tpn-accent);
 }
+.tpn-theme-charcoal .tpn-folder-marker {
+  box-shadow: inset 0 0 0 1.5px var(--tpn-line);
+}
+.tpn-theme-charcoal .tpn-folder-row.is-selected .tpn-folder-marker,
+.tpn-theme-charcoal .tpn-folder-row:has(.tpn-folder-chevron.is-open) .tpn-folder-marker {
+  background: var(--tpn-accent);
+  box-shadow: none;
+}
+.tpn-theme-charcoal .tpn-folder-row.is-child .tpn-folder-marker {
+  background: var(--tpn-grip);
+}
+.tpn-theme-charcoal .tpn-folder-row.is-child.is-selected .tpn-folder-marker,
+.tpn-theme-charcoal .tpn-folder-row.is-child:has(.tpn-folder-chevron.is-open) .tpn-folder-marker {
+  background: var(--tpn-accent);
+}
+
 
 .tpn-folder-name {
   flex: 1;
@@ -392,7 +433,7 @@
 
 .tpn-folder-count {
   font-family: var(--tpn-font-mono);
-  font-size: var(--tpn-t-label);
+  font-size: var(--tpn-t-eyebrow);
   font-variant-numeric: tabular-nums;
   color: var(--tpn-muted);
 }
@@ -508,7 +549,7 @@
 }
 .tpn-files-count {
   font-family: var(--tpn-font-mono);
-  font-size: var(--tpn-t-label);
+  font-size: var(--tpn-t-eyebrow);
   font-variant-numeric: tabular-nums;
   color: var(--tpn-muted);
   flex: none;
@@ -600,7 +641,7 @@
 }
 .tpn-group-label {
   font-family: var(--tpn-font-mono);
-  font-size: var(--tpn-t-eyebrow);
+  font-size: var(--tpn-t-label);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--tpn-muted-strong);
@@ -612,7 +653,7 @@
 }
 .tpn-group-count {
   font-family: var(--tpn-font-mono);
-  font-size: var(--tpn-t-label);
+  font-size: var(--tpn-t-eyebrow);
   font-variant-numeric: tabular-nums;
   color: var(--tpn-muted-strong);
 }
@@ -701,6 +742,7 @@
 .tpn-file-when {
   font-family: var(--tpn-font-mono);
   font-size: var(--tpn-t-meta);
+  letter-spacing: 0.06em;
   font-variant-numeric: tabular-nums;
   color: var(--tpn-muted-strong);
   flex: none;
@@ -718,6 +760,7 @@
 .tpn-file-size {
   font-family: var(--tpn-font-mono);
   font-size: var(--tpn-t-meta);
+  letter-spacing: 0.06em;
   font-variant-numeric: tabular-nums;
   color: var(--tpn-muted);
   flex: none;
@@ -787,9 +830,9 @@ body.is-mobile .tpn-root {
   --tpn-t-heading: max(18px, calc(var(--tpn-reader) * 1.00));
   --tpn-t-body:    max(17px, calc(var(--tpn-reader) * 0.95));
   --tpn-t-body-sm: max(16px, calc(var(--tpn-reader) * 0.90));
-  --tpn-t-meta:    max(15px, calc(var(--tpn-reader) * 0.85));
+  --tpn-t-meta:    max(12px, calc(var(--tpn-reader) * 0.68));
   --tpn-t-label:   max(11px, calc(var(--tpn-reader) * 0.64));
-  --tpn-t-eyebrow: max(12px, calc(var(--tpn-reader) * 0.68));
+  --tpn-t-eyebrow: max(11px, calc(var(--tpn-reader) * 0.62));
   --tpn-tap: 48px;
 }
 
@@ -880,7 +923,8 @@ body.is-mobile .tpn-file-size {
 body.tpn-theme-macchiato,
 body.tpn-theme-racing,
 body.tpn-theme-ink,
-body.tpn-theme-paper {
+body.tpn-theme-paper,
+body.tpn-theme-charcoal {
   --jd-font-serif: 'Newsreader', Georgia, serif;
   --jd-font-ui: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --jd-font-text: var(--jd-font-serif);
@@ -988,6 +1032,14 @@ body.theme-light[class*='tpn-theme-'] .titlebar {
 }
 
 body.tpn-theme-macchiato {
+  --jd-text-muted-strong: #A5ADCB;
+  --jd-text-ghost: #6E738D;
+  --jd-marker: #5B6078;
+  --jd-amber-text: #EED49F;
+  --jd-amber-bg: rgba(238, 212, 159, 0.14);
+  --jd-amber-edge: rgba(238, 212, 159, 0.40);
+  --jd-on-active-2: #B8C0E0;
+  --jd-on-active-3: #A5ADCB;
   --jd-deep: #181825;
   --jd-bg: #24273A;
   --jd-surface: #2E3145;
@@ -1039,6 +1091,14 @@ body.tpn-theme-macchiato {
 }
 
 body.tpn-theme-racing {
+  --jd-text-muted-strong: #B5AC9E;
+  --jd-text-ghost: #7A7266;
+  --jd-marker: #5C554A;
+  --jd-amber-text: #D7B15C;
+  --jd-amber-bg: rgba(201, 162, 39, 0.14);
+  --jd-amber-edge: rgba(201, 162, 39, 0.40);
+  --jd-on-active-2: #C9C1B3;
+  --jd-on-active-3: #A9A093;
   --jd-deep: #14120F;
   --jd-bg: #201D19;
   --jd-surface: #26221C;
@@ -1093,6 +1153,14 @@ body.tpn-theme-racing {
    table-header/hover band a step above that. Gold interacts; coral alarms;
    muted lifted to ~6.6:1, faintest tier reserved for non-essential labels. */
 body.tpn-theme-ink {
+  --jd-text-muted-strong: #A7ADBB;
+  --jd-text-ghost: #6E7585;
+  --jd-marker: #4C5262;
+  --jd-amber-text: #E07856;
+  --jd-amber-bg: rgba(224, 120, 86, 0.14);
+  --jd-amber-edge: rgba(224, 120, 86, 0.40);
+  --jd-on-active-2: #C9BFA8;
+  --jd-on-active-3: #A79F8E;
   --jd-deep: #101218;
   --jd-bg: #171A21;
   --jd-surface: #1E222B;
@@ -1149,6 +1217,14 @@ body.tpn-theme-ink {
    you"), muted lifted to 4.6:1 (#7C7466), faintest tier #A39A89 reserved
    for non-essential labels. */
 body.tpn-theme-paper {
+  --jd-text-muted-strong: #6E6656;
+  --jd-text-ghost: #A39A89;
+  --jd-marker: #BDB5A4;
+  --jd-amber-text: #8A5F16;
+  --jd-amber-bg: #F4EBDA;
+  --jd-amber-edge: #D9C9A6;
+  --jd-on-active-2: #4F5A4E;
+  --jd-on-active-3: #5F6B5E;
   --jd-deep: #F1EDE4;
   --jd-bg: #F7F5EF;
   --jd-surface: #EFECE2;
@@ -1159,7 +1235,7 @@ body.tpn-theme-paper {
   --jd-border-sub: #EFEBE0;
   --jd-text: #2A2723;
   --jd-text-muted: #7C7466;
-  --jd-text-faint: #A39A89;
+  --jd-text-faint: #8E8574;
   --jd-heading: #241F19;
   --jd-accent: #4C6A52;
   --jd-accent-hover: #2F4636;
@@ -1194,11 +1270,71 @@ body.tpn-theme-paper {
   --color-base-30: #E2DCCD;
   --color-base-35: #D6CFBE;
   --color-base-40: #B0A797;
-  --color-base-50: #A39A89;
+  --color-base-50: #8E8574;
   --color-base-60: #7C7466;
   --color-base-70: #2A2723;
   --color-base-100: #241F19;
 }
+body.tpn-theme-charcoal {
+  --jd-deep: #1B1917;
+  --jd-bg: #24221E;
+  --jd-surface: #2B2924;
+  --jd-raised: #2B2924;
+  --jd-hover: #2E2B26;
+  --jd-active: #26302A;
+  --jd-border: #35322C;
+  --jd-border-sub: #2B2925;
+  --jd-text: #E4DFD4;
+  --jd-text-muted: #A39B8C;
+  --jd-text-faint: #8A8375;
+  --jd-text-muted-strong: #B3AB9C;
+  --jd-text-ghost: #756E62;
+  --jd-marker: #706A5E;
+  --jd-heading: #F2EDE3;
+  --jd-accent: #8FB59A;
+  --jd-accent-hover: #A9CDB2;
+  --jd-accent-bg: rgba(143, 181, 154, 0.14);
+  --jd-accent-dim: rgba(143, 181, 154, 0.35);
+  --jd-amber-text: #E0B462;
+  --jd-amber-bg: rgba(210, 160, 74, 0.13);
+  --jd-amber-edge: rgba(210, 160, 74, 0.45);
+  --jd-on-active-2: #C0C7BB;
+  --jd-on-active-3: #A7B0A4;
+  --jd-hue-inbox: #D2A04A;
+  --jd-hue-church: #8FB59A;
+  --jd-hue-career: #7FA8C9;
+  --jd-hue-personal: #86B584;
+  --jd-hue-library: #D0885C;
+  --jd-hue-system: #7D776C;
+  --jd-hue-archive: #7D776C;
+  --jd-hue-people: #D9806E;
+  --jd-hue-launchd: #86B584;
+  --jd-hue-data: #D2A04A;
+  --jd-hue-docs: #A39B8C;
+  --jd-hue-books: #D0885C;
+  --jd-hue-obsidian: #8FB59A;
+  --jd-green: #8FB59A;
+  --jd-yellow: #D2A04A;
+  --jd-red: #D9806E;
+  --background-primary-rgb: 36, 34, 30;
+  --background-secondary-rgb: 27, 25, 23;
+  --color-accent-rgb: 143, 181, 154;
+  --interactive-accent-rgb: 143, 181, 154;
+  --text-highlight-bg: rgba(210, 160, 74, 0.22);
+  --text-on-accent: #1B1917;
+  --color-base-00: #1B1917;
+  --color-base-10: #1F1D1A;
+  --color-base-20: #24221E;
+  --color-base-25: #2B2924;
+  --color-base-30: #35322C;
+  --color-base-35: #423E36;
+  --color-base-40: #6A645A;
+  --color-base-50: #8A8375;
+  --color-base-60: #A39B8C;
+  --color-base-70: #E4DFD4;
+  --color-base-100: #F2EDE3;
+}
+
 
 /* ═══════════════════════════════════════════════════════════════════════════
    NOTE CONTENT (refinement handoff, 2026-08-31)
