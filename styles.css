@@ -1491,6 +1491,39 @@ body[class*='tpn-theme-'] .callout[data-callout='member-card'] > .callout-conten
   margin: 0;
   grid-column: 1;
 }
+/* Portrait placeholder. The generator writes "*No photo available*" as the
+   photo-swap target; left alone that is a line of italic prose sitting where
+   a portrait goes. Dress the paragraph as the design's flat block instead —
+   the text is hidden rather than removed, so the swap target survives. */
+body[class*='tpn-theme-']
+  .callout[data-callout='member-card']
+  > .callout-content
+  > p:first-child:not(:has(.image-embed)) {
+  box-sizing: border-box;
+  width: 132px;
+  height: 164px;
+  background: var(--jd-surface);
+  border: 1px solid var(--jd-border);
+  border-radius: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 8px;
+  font-size: 0;
+}
+
+body[class*='tpn-theme-']
+  .callout[data-callout='member-card']
+  > .callout-content
+  > p:first-child:not(:has(.image-embed))::after {
+  content: 'Portrait';
+  font-family: var(--jd-font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--jd-text-faint);
+}
+
 body[class*='tpn-theme-'] .callout[data-callout='member-card'] .image-embed img {
   width: 132px;
   height: 164px;
@@ -1564,11 +1597,48 @@ body[class*='tpn-theme-'] .member-profile h2 {
    17px values, and values that wrap rather than ellipse.
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/* Rule M3, the case it was written for. The member card is a two-up record
+   inside a two-column card: portrait | list, and the list is itself 1fr 1fr
+   with a 110px label track in each column. At a phone width that leaves each
+   value about 80px — narrower than its own label — so every field wraps to
+   three or four lines and the card becomes a column of shredded text. Both
+   grids collapse to one column here, which is the whole of rule M3: two-up
+   grids stack, they do not squeeze. */
+body.is-mobile[class*='tpn-theme-'] .callout[data-callout='member-card'] > .callout-content {
+  grid-template-columns: 1fr;
+  row-gap: 16px;
+}
+
+body.is-mobile[class*='tpn-theme-']
+  .callout[data-callout='member-card']
+  > .callout-content
+  > ul {
+  grid-column: 1;
+  grid-template-columns: 1fr;
+  column-gap: 0;
+}
+
 body.is-mobile[class*='tpn-theme-'] .callout[data-callout='member-card'] > .callout-content > ul > li {
+  grid-column: 1;
   grid-template-columns: 112px 1fr;
   font-size: max(17px, 0.95em);
   line-height: 1.45;
   padding: 10px 0;
+}
+
+/* Portrait at the size the design names for a phone. */
+body.is-mobile[class*='tpn-theme-']
+  .callout[data-callout='member-card']
+  > .callout-content
+  > p:first-child:not(:has(.image-embed)) {
+  width: 88px;
+  height: 110px;
+  padding-bottom: 6px;
+}
+
+body.is-mobile[class*='tpn-theme-'] .callout[data-callout='member-card'] .image-embed img {
+  width: 88px;
+  height: 110px;
 }
 
 body.is-mobile[class*='tpn-theme-'] .callout[data-callout='member-card'] li > strong {
