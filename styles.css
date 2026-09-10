@@ -925,6 +925,9 @@ body.tpn-theme-racing,
 body.tpn-theme-ink,
 body.tpn-theme-paper,
 body.tpn-theme-charcoal {
+  --jd-notice-bg: #2B2924;
+  --jd-notice-text: #E4DFD4;
+  --jd-notice-edge: #423E36;
   --jd-font-serif: 'Newsreader', Georgia, serif;
   --jd-font-ui: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --jd-font-text: var(--jd-font-serif);
@@ -1032,6 +1035,9 @@ body.theme-light[class*='tpn-theme-'] .titlebar {
 }
 
 body.tpn-theme-macchiato {
+  --jd-notice-bg: #2E3145;
+  --jd-notice-text: #CAD3F5;
+  --jd-notice-edge: #494D64;
   --jd-text-muted-strong: #A5ADCB;
   --jd-text-ghost: #6E738D;
   --jd-marker: #5B6078;
@@ -1091,6 +1097,9 @@ body.tpn-theme-macchiato {
 }
 
 body.tpn-theme-racing {
+  --jd-notice-bg: #26221C;
+  --jd-notice-text: #E8E1D4;
+  --jd-notice-edge: #3D372E;
   --jd-text-muted-strong: #B5AC9E;
   --jd-text-ghost: #7A7266;
   --jd-marker: #5C554A;
@@ -1153,6 +1162,9 @@ body.tpn-theme-racing {
    table-header/hover band a step above that. Gold interacts; coral alarms;
    muted lifted to ~6.6:1, faintest tier reserved for non-essential labels. */
 body.tpn-theme-ink {
+  --jd-notice-bg: #1E222B;
+  --jd-notice-text: #D7DBE2;
+  --jd-notice-edge: #323744;
   --jd-text-muted-strong: #A7ADBB;
   --jd-text-ghost: #6E7585;
   --jd-marker: #4C5262;
@@ -1217,6 +1229,9 @@ body.tpn-theme-ink {
    you"), muted lifted to 4.6:1 (#7C7466), faintest tier #A39A89 reserved
    for non-essential labels. */
 body.tpn-theme-paper {
+  --jd-notice-bg: #2A2723;
+  --jd-notice-text: #F5F3ED;
+  --jd-notice-edge: #2A2723;
   --jd-text-muted-strong: #6E6656;
   --jd-text-ghost: #A39A89;
   --jd-marker: #BDB5A4;
@@ -1335,6 +1350,34 @@ body.tpn-theme-charcoal {
   --color-base-100: #F2EDE3;
 }
 
+
+/* Notices ("Found 4 plugins to update").
+
+   Obsidian draws a notice in --background-modifier-message with
+   --text-on-accent as the text. Atom maps that background to
+   --background-secondary-alt, which this plugin remaps to the note page
+   color — so under Paper the pill came out page-cream with near-white text
+   on it, i.e. invisible (reported 2026-09-10 with a screenshot of a notice
+   nobody could read). The notice gets its own ground and its own text color
+   in every palette, so neither depends on what a base theme happens to
+   alias. */
+body[class*='tpn-theme-'] {
+  --background-modifier-message: var(--jd-notice-bg);
+}
+
+body[class*='tpn-theme-'] .notice {
+  background: var(--jd-notice-bg);
+  color: var(--jd-notice-text);
+  border: 1px solid var(--jd-notice-edge);
+  border-radius: 6px;
+  box-shadow: none;
+  font-family: var(--jd-font-ui);
+  font-size: 13px;
+}
+
+body.is-mobile[class*='tpn-theme-'] .notice {
+  font-size: 16px;
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    NOTE CONTENT (refinement handoff, 2026-08-31)
