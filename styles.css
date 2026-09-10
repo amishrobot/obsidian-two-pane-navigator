@@ -925,9 +925,6 @@ body.tpn-theme-racing,
 body.tpn-theme-ink,
 body.tpn-theme-paper,
 body.tpn-theme-charcoal {
-  --jd-notice-bg: #2B2924;
-  --jd-notice-text: #E4DFD4;
-  --jd-notice-edge: #423E36;
   --jd-font-serif: 'Newsreader', Georgia, serif;
   --jd-font-ui: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --jd-font-text: var(--jd-font-serif);
@@ -1035,6 +1032,8 @@ body.theme-light[class*='tpn-theme-'] .titlebar {
 }
 
 body.tpn-theme-macchiato {
+  --jd-hairline: #24263A;
+  --jd-on-accent: #181825;
   --jd-notice-bg: #2E3145;
   --jd-notice-text: #CAD3F5;
   --jd-notice-edge: #494D64;
@@ -1097,6 +1096,8 @@ body.tpn-theme-macchiato {
 }
 
 body.tpn-theme-racing {
+  --jd-hairline: #26221C;
+  --jd-on-accent: #14120F;
   --jd-notice-bg: #26221C;
   --jd-notice-text: #E8E1D4;
   --jd-notice-edge: #3D372E;
@@ -1162,6 +1163,8 @@ body.tpn-theme-racing {
    table-header/hover band a step above that. Gold interacts; coral alarms;
    muted lifted to ~6.6:1, faintest tier reserved for non-essential labels. */
 body.tpn-theme-ink {
+  --jd-hairline: #1D2029;
+  --jd-on-accent: #171A21;
   --jd-notice-bg: #1E222B;
   --jd-notice-text: #D7DBE2;
   --jd-notice-edge: #323744;
@@ -1229,6 +1232,8 @@ body.tpn-theme-ink {
    you"), muted lifted to 4.6:1 (#7C7466), faintest tier #A39A89 reserved
    for non-essential labels. */
 body.tpn-theme-paper {
+  --jd-hairline: #EBE6DA;
+  --jd-on-accent: #F5F3ED;
   --jd-notice-bg: #2A2723;
   --jd-notice-text: #F5F3ED;
   --jd-notice-edge: #2A2723;
@@ -1291,6 +1296,11 @@ body.tpn-theme-paper {
   --color-base-100: #241F19;
 }
 body.tpn-theme-charcoal {
+  --jd-hairline: #2E2B26;
+  --jd-on-accent: #1B1917;
+  --jd-notice-bg: #2B2924;
+  --jd-notice-text: #E4DFD4;
+  --jd-notice-edge: #423E36;
   --jd-deep: #1B1917;
   --jd-bg: #24221E;
   --jd-surface: #2B2924;
