@@ -8,6 +8,7 @@ import {
   setIcon,
 } from 'obsidian';
 import { ExcerptCache } from './excerpts';
+import { memberLine } from './memberLine';
 import { hueFor } from './hues';
 import { NavigatorSettings, NavigatorState, SortKey } from './types';
 import { NewFolderModal } from './NewFolderModal';
@@ -95,6 +96,8 @@ export class NavigatorView extends ItemView {
     this.registerEvent(this.app.vault.on('create', onVaultChange));
     this.registerEvent(this.app.vault.on('delete', onVaultChange));
     this.registerEvent(this.app.vault.on('modify', onVaultChange));
+    // Member rows read frontmatter, which is parsed after 'modify' fires.
+    this.registerEvent(this.app.metadataCache.on('changed', () => this.scheduleRefresh()));
     this.registerEvent(
       this.app.vault.on('rename', (file, oldPath) => {
         this.excerpts.forget(oldPath);
@@ -584,6 +587,21 @@ export class NavigatorView extends ItemView {
     const inInbox = file.path.startsWith('_inbox/') || file.path.startsWith('_inbox\\');
     if (inInbox && modifiedToday) line1.createSpan('tpn-file-unread');
 
+    const member = file.extension === 'md' ? memberLine(this.app, file, now) : null;
+    if (member) {
+      if (member.flag) line1.createSpan({ cls: 'tpn-member-flag', text: member.flag });
+      const ml = body.createDiv('tpn-file-line2 tpn-member-line');
+      ml.createSpan({ cls: `tpn-member-dot is-${member.tone}`, attr: { 'aria-label': member.recommend, title: member.recommend } });
+      ml.createSpan({ cls: 'tpn-member-calling', text: member.calling });
+      ml.createSpan({
+        cls: `tpn-member-contact${member.contactNever ? ' is-never' : ''}`,
+        text: member.contactNever ? 'no contact' : member.contact,
+        attr: { title: 'Last contact' },
+      });
+      this.attachRowHandlers(row, file);
+      return;
+    }
+
     const line2 = body.createDiv('tpn-file-line2');
     const when = line2.createSpan({ cls: 'tpn-file-when', text: relativeDate(days) });
     if (modifiedToday) when.addClass('is-today');
@@ -604,6 +622,10 @@ export class NavigatorView extends ItemView {
       }
     }
 
+    this.attachRowHandlers(row, file);
+  }
+
+  private attachRowHandlers(row: HTMLElement, file: TFile): void {
     const grip = row.createSpan({ cls: 'tpn-file-grip', text: '⠿' });
     grip.draggable = true;
     grip.addEventListener('dragstart', (e) => {

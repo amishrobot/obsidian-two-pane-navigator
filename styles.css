@@ -765,6 +765,45 @@
   color: var(--tpn-muted);
   flex: none;
 }
+/* Member rows (memberLine.ts): recommend dot · calling · time since contact */
+.tpn-member-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex: none;
+  background: var(--tpn-line);
+}
+.tpn-member-dot.is-ok { background: var(--color-green); }
+.tpn-member-dot.is-warn { background: var(--color-yellow); }
+.tpn-member-dot.is-danger { background: var(--color-red); }
+.tpn-member-calling {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--tpn-font-ui);
+  font-size: var(--tpn-t-body-sm);
+  color: var(--tpn-muted);
+}
+.tpn-file-row.is-selected .tpn-member-calling { color: var(--tpn-text); }
+.tpn-member-contact {
+  flex: none;
+  font-family: var(--tpn-font-ui);
+  font-size: var(--tpn-t-meta);
+  font-variant-numeric: tabular-nums;
+  color: var(--tpn-muted-strong);
+}
+.tpn-member-contact.is-never { color: var(--tpn-muted); font-style: italic; }
+.tpn-member-flag {
+  margin-left: 6px;
+  font-family: var(--tpn-font-ui);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-orange);
+}
 .tpn-file-snippet {
   flex: 1;
   min-width: 0;

@@ -99,6 +99,57 @@ function firstContentLine(raw) {
   return "";
 }
 
+// src/memberLine.ts
+var DAY_MS = 864e5;
+function isMember(fm) {
+  const c = fm == null ? void 0 : fm.cssclasses;
+  if (Array.isArray(c))
+    return c.includes("member-profile");
+  return typeof c === "string" && c.split(/[\s,]+/).includes("member-profile");
+}
+function callingNames(raw) {
+  return String(raw != null ? raw : "").split("/").map((c) => c.replace(/\s*\([^)]*\)\s*$/, "").trim()).filter(Boolean).join(" \xB7 ");
+}
+function contactAgo(raw, now) {
+  const s = String(raw != null ? raw : "").trim();
+  if (!s)
+    return "never";
+  const t = new Date(s).getTime();
+  if (isNaN(t))
+    return "never";
+  const days = Math.floor((now - t) / DAY_MS);
+  if (days <= 0)
+    return "today";
+  if (days <= 30)
+    return `${days}d`;
+  if (days <= 84)
+    return `${Math.floor(days / 7)}w`;
+  return `${Math.floor(days / 30)}mo`;
+}
+var TONES = {
+  current: "ok",
+  expiring: "warn",
+  expired: "danger"
+};
+function memberLine(app, file, now) {
+  var _a, _b, _c, _d, _e;
+  const fm = (_a = app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter;
+  if (!isMember(fm))
+    return null;
+  const rec = String((_b = fm == null ? void 0 : fm.recommend) != null ? _b : "").toLowerCase();
+  const contact = contactAgo(fm == null ? void 0 : fm["last-contact"], now);
+  const pri = String((_c = fm == null ? void 0 : fm.priority) != null ? _c : "");
+  const pastoral = String((_d = fm == null ? void 0 : fm["pastoral-state"]) != null ? _d : "");
+  return {
+    tone: (_e = TONES[rec]) != null ? _e : "muted",
+    recommend: rec ? `Recommend ${rec}` : "Recommend unknown",
+    calling: callingNames(fm == null ? void 0 : fm.calling) || "No calling",
+    contact,
+    contactNever: contact === "never",
+    flag: pri === "top-10" || pri === "high" ? pri : pastoral ? pastoral.replace(/-/g, " ") : pri === "new-move-in" ? "new" : ""
+  };
+}
+
 // src/hues.ts
 var HUES = {
   macchiato: {
@@ -207,7 +258,7 @@ var NewFolderModal = class extends import_obsidian.Modal {
 
 // src/NavigatorView.ts
 var VIEW_TYPE_NAVIGATOR = "two-pane-navigator";
-var DAY_MS = 864e5;
+var DAY_MS2 = 864e5;
 var NARROW_PX = 520;
 var SUNK_NAMES = /* @__PURE__ */ new Set(["_archive", "_system"]);
 var PINNED_FIRST = "_inbox";
@@ -251,6 +302,7 @@ var NavigatorView = class extends import_obsidian2.ItemView {
     this.registerEvent(this.app.vault.on("create", onVaultChange));
     this.registerEvent(this.app.vault.on("delete", onVaultChange));
     this.registerEvent(this.app.vault.on("modify", onVaultChange));
+    this.registerEvent(this.app.metadataCache.on("changed", () => this.scheduleRefresh()));
     this.registerEvent(
       this.app.vault.on("rename", (file, oldPath) => {
         this.excerpts.forget(oldPath);
@@ -669,7 +721,7 @@ var NavigatorView = class extends import_obsidian2.ItemView {
     const order = ["Today", "This week", "This month", "This year", "Earlier"];
     const buckets = new Map(order.map((l) => [l, []]));
     for (const f of files) {
-      const days = Math.floor((now - f.stat.mtime) / DAY_MS);
+      const days = Math.floor((now - f.stat.mtime) / DAY_MS2);
       const label = days <= 1 ? "Today" : days < 7 ? "This week" : days < 31 ? "This month" : days < 365 ? "This year" : "Earlier";
       buckets.get(label).push(f);
     }
@@ -685,11 +737,26 @@ var NavigatorView = class extends import_obsidian2.ItemView {
     const line1 = body.createDiv("tpn-file-line1");
     const name = file.extension === "md" ? file.basename : file.name;
     line1.createSpan({ cls: "tpn-file-name", text: name });
-    const days = Math.floor((now - file.stat.mtime) / DAY_MS);
+    const days = Math.floor((now - file.stat.mtime) / DAY_MS2);
     const modifiedToday = new Date(file.stat.mtime).toDateString() === new Date(now).toDateString();
     const inInbox = file.path.startsWith("_inbox/") || file.path.startsWith("_inbox\\");
     if (inInbox && modifiedToday)
       line1.createSpan("tpn-file-unread");
+    const member = file.extension === "md" ? memberLine(this.app, file, now) : null;
+    if (member) {
+      if (member.flag)
+        line1.createSpan({ cls: "tpn-member-flag", text: member.flag });
+      const ml = body.createDiv("tpn-file-line2 tpn-member-line");
+      ml.createSpan({ cls: `tpn-member-dot is-${member.tone}`, attr: { "aria-label": member.recommend, title: member.recommend } });
+      ml.createSpan({ cls: "tpn-member-calling", text: member.calling });
+      ml.createSpan({
+        cls: `tpn-member-contact${member.contactNever ? " is-never" : ""}`,
+        text: member.contactNever ? "no contact" : member.contact,
+        attr: { title: "Last contact" }
+      });
+      this.attachRowHandlers(row, file);
+      return;
+    }
     const line2 = body.createDiv("tpn-file-line2");
     const when = line2.createSpan({ cls: "tpn-file-when", text: relativeDate(days) });
     if (modifiedToday)
@@ -711,6 +778,9 @@ var NavigatorView = class extends import_obsidian2.ItemView {
         });
       }
     }
+    this.attachRowHandlers(row, file);
+  }
+  attachRowHandlers(row, file) {
     const grip = row.createSpan({ cls: "tpn-file-grip", text: "\u283F" });
     grip.draggable = true;
     grip.addEventListener("dragstart", (e) => {
