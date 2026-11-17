@@ -48,9 +48,18 @@ export function firstContentLine(raw: string): string {
       body = after === -1 ? '' : body.slice(after + 1);
     }
   }
+  let inCallout = false;
   for (const line of body.split('\n')) {
     const t = line.trim();
+    // A callout's body ("> " lines after "> [!type]") is structure, not the
+    // note's opening sentence: a [!member-card] body starts with the photo
+    // embed, which previewed as "alec-tambo.jpg|200".
+    if (/^>\s*\[!/.test(t)) { inCallout = true; continue; }
+    if (inCallout && t.startsWith('>')) continue;
+    inCallout = false;
     if (!t) continue;
+    // A line that is only an embed (![[photo.jpg|200]]) has no words to show.
+    if (/^!\[\[[^\]]*\]\]$/.test(t)) continue;
     if (t.startsWith('#')) continue; // headings and tags-only lines
     if (/^(-{3,}|\*{3,}|_{3,})$/.test(t)) continue; // horizontal rules
     if (t.startsWith('```')) continue;

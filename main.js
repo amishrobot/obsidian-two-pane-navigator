@@ -67,9 +67,19 @@ function firstContentLine(raw) {
       body = after === -1 ? "" : body.slice(after + 1);
     }
   }
+  let inCallout = false;
   for (const line of body.split("\n")) {
     const t = line.trim();
+    if (/^>\s*\[!/.test(t)) {
+      inCallout = true;
+      continue;
+    }
+    if (inCallout && t.startsWith(">"))
+      continue;
+    inCallout = false;
     if (!t)
+      continue;
+    if (/^!\[\[[^\]]*\]\]$/.test(t))
       continue;
     if (t.startsWith("#"))
       continue;
