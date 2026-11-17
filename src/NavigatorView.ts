@@ -8,7 +8,7 @@ import {
   setIcon,
 } from 'obsidian';
 import { ExcerptCache } from './excerpts';
-import { memberLine } from './memberLine';
+import { memberLine, isRosterFolder, rosterGroups, ROSTER_SORTS, RosterKey } from './memberLine';
 import { hueFor } from './hues';
 import { NavigatorSettings, NavigatorState, SortKey } from './types';
 import { NewFolderModal } from './NewFolderModal';
@@ -320,8 +320,15 @@ export class NavigatorView extends ItemView {
     return null;
   }
 
+  /** Whether the open folder is a member roster; cached per render. */
+  private roster = false;
+
   private sortKey(): SortKey {
-    return this.state.sortByFolder[this.state.folder] ?? 'modified';
+    const saved = this.state.sortByFolder[this.state.folder];
+    if (this.roster) {
+      return saved && ROSTER_SORTS.some((s) => s.key === saved) ? saved : 'attention';
+    }
+    return saved && saved !== 'attention' && saved !== 'contact' && saved !== 'recommend' ? saved : 'modified';
   }
 
   /** Notes under this folder's subfolders. The folder pane counts a folder
@@ -338,6 +345,7 @@ export class NavigatorView extends ItemView {
 
   private filesOf(folder: TFolder): TFile[] {
     let files = folder.children.filter((c): c is TFile => c instanceof TFile);
+    this.roster = isRosterFolder(this.app, files);
     const q = this.query.trim().toLowerCase();
     if (q) files = files.filter((f) => f.basename.toLowerCase().includes(q));
     const key = this.sortKey();
@@ -527,11 +535,12 @@ export class NavigatorView extends ItemView {
   private renderSorts(): void {
     this.sortRowEl.empty();
     const current = this.sortKey();
-    const options: { key: SortKey; label: string }[] = [
+    const options: { key: SortKey; label: string }[] = this.roster ? ROSTER_SORTS : [
       { key: 'modified', label: 'Recent' },
       { key: 'name', label: 'Name' },
       { key: 'size', label: 'Size' },
     ];
+    this.sortRowEl.toggleClass('is-roster', this.roster);
     for (const opt of options) {
       const cell = this.sortRowEl.createDiv({
         cls: `tpn-sort-cell${opt.key === current ? ' is-active' : ''}`,
@@ -547,6 +556,7 @@ export class NavigatorView extends ItemView {
 
   private groupFiles(files: TFile[], now: number): { label: string; files: TFile[] }[] {
     const key = this.sortKey();
+    if (this.roster) return rosterGroups(this.app, files, key as RosterKey, now);
     if (key === 'name') return [{ label: 'A → Z', files }];
     if (key === 'size') return [{ label: 'Largest first', files }];
     if (!this.settings.groupByDate) return [{ label: 'All notes', files }];

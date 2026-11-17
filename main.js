@@ -126,6 +126,73 @@ function contactAgo(raw, now) {
     return `${Math.floor(days / 7)}w`;
   return `${Math.floor(days / 30)}mo`;
 }
+function memberInfo(app, file) {
+  var _a, _b, _c, _d, _e;
+  if (file.extension !== "md")
+    return null;
+  const fm = (_a = app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter;
+  if (!isMember(fm))
+    return null;
+  const lc = String((_b = fm == null ? void 0 : fm["last-contact"]) != null ? _b : "").trim();
+  const t = lc ? new Date(lc).getTime() : NaN;
+  return {
+    recommend: String((_c = fm == null ? void 0 : fm.recommend) != null ? _c : "").toLowerCase(),
+    lastContact: isNaN(t) ? null : t,
+    priority: String((_d = fm == null ? void 0 : fm.priority) != null ? _d : ""),
+    pastoral: String((_e = fm == null ? void 0 : fm["pastoral-state"]) != null ? _e : "")
+  };
+}
+var ROSTER_SORTS = [
+  { key: "attention", label: "Attention" },
+  { key: "contact", label: "Contact" },
+  { key: "recommend", label: "Recommend" },
+  { key: "name", label: "Name" }
+];
+function rosterGroups(app, files, key, now) {
+  const byName = (a, b) => a.basename.localeCompare(b.basename);
+  const info = new Map(files.map((f) => [f, memberInfo(app, f)]));
+  const members = files.filter((f) => info.get(f));
+  const others = files.filter((f) => !info.get(f)).sort(byName);
+  const buckets = (order, label, sort) => {
+    const m = new Map(order.map((l) => [l, []]));
+    for (const f of members)
+      m.get(label(info.get(f))).push(f);
+    const out = order.map((l) => ({ label: l, files: m.get(l).sort(sort) })).filter((g) => g.files.length);
+    if (others.length)
+      out.push({ label: "Other notes", files: others });
+    return out;
+  };
+  if (key === "attention") {
+    return buckets(
+      ["Needs attention", "New move-ins", "Everyone else"],
+      (i) => i.priority === "top-10" || i.priority === "high" || i.pastoral || i.recommend === "expiring" ? "Needs attention" : i.priority === "new-move-in" ? "New move-ins" : "Everyone else",
+      byName
+    );
+  }
+  if (key === "contact") {
+    const age = (f) => {
+      var _a;
+      return (_a = info.get(f).lastContact) != null ? _a : -Infinity;
+    };
+    return buckets(
+      ["No contact logged", "Over 3 months", "Last 3 months"],
+      (i) => i.lastContact === null ? "No contact logged" : now - i.lastContact > 90 * DAY_MS ? "Over 3 months" : "Last 3 months",
+      (a, b) => age(a) - age(b) || byName(a, b)
+    );
+  }
+  if (key === "recommend") {
+    const label = (i) => i.recommend === "expired" ? "Expired" : i.recommend === "expiring" ? "Expiring" : i.recommend === "current" ? "Current" : "Unknown or none";
+    return buckets(["Expiring", "Expired", "Unknown or none", "Current"], label, byName);
+  }
+  return [{ label: "A \u2192 Z", files: [...files].sort(byName) }];
+}
+function isRosterFolder(app, files) {
+  const md = files.filter((f) => f.extension === "md");
+  if (md.length < 5)
+    return false;
+  const sample = md.slice(0, 20);
+  return sample.filter((f) => memberInfo(app, f)).length >= sample.length * 0.6;
+}
 var TONES = {
   current: "ok",
   expiring: "warn",
@@ -273,6 +340,8 @@ var NavigatorView = class extends import_obsidian2.ItemView {
     this.refreshTimer = null;
     this.resizeObserver = null;
     this.narrowShowFolders = false;
+    /** Whether the open folder is a member roster; cached per render. */
+    this.roster = false;
     this.draggedFile = null;
     this.plugin = plugin;
     this.excerpts = new ExcerptCache(this.app);
@@ -506,8 +575,11 @@ var NavigatorView = class extends import_obsidian2.ItemView {
     return null;
   }
   sortKey() {
-    var _a;
-    return (_a = this.state.sortByFolder[this.state.folder]) != null ? _a : "modified";
+    const saved = this.state.sortByFolder[this.state.folder];
+    if (this.roster) {
+      return saved && ROSTER_SORTS.some((s) => s.key === saved) ? saved : "attention";
+    }
+    return saved && saved !== "attention" && saved !== "contact" && saved !== "recommend" ? saved : "modified";
   }
   /** Notes under this folder's subfolders. The folder pane counts a folder
    *  recursively; this pane lists only its direct notes, because the design
@@ -523,6 +595,7 @@ var NavigatorView = class extends import_obsidian2.ItemView {
   }
   filesOf(folder) {
     let files = folder.children.filter((c) => c instanceof import_obsidian2.TFile);
+    this.roster = isRosterFolder(this.app, files);
     const q = this.query.trim().toLowerCase();
     if (q)
       files = files.filter((f) => f.basename.toLowerCase().includes(q));
@@ -693,11 +766,12 @@ var NavigatorView = class extends import_obsidian2.ItemView {
   renderSorts() {
     this.sortRowEl.empty();
     const current = this.sortKey();
-    const options = [
+    const options = this.roster ? ROSTER_SORTS : [
       { key: "modified", label: "Recent" },
       { key: "name", label: "Name" },
       { key: "size", label: "Size" }
     ];
+    this.sortRowEl.toggleClass("is-roster", this.roster);
     for (const opt of options) {
       const cell = this.sortRowEl.createDiv({
         cls: `tpn-sort-cell${opt.key === current ? " is-active" : ""}`,
@@ -712,6 +786,8 @@ var NavigatorView = class extends import_obsidian2.ItemView {
   }
   groupFiles(files, now) {
     const key = this.sortKey();
+    if (this.roster)
+      return rosterGroups(this.app, files, key, now);
     if (key === "name")
       return [{ label: "A \u2192 Z", files }];
     if (key === "size")

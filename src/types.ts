@@ -1,5 +1,5 @@
 export type ThemeName = 'macchiato' | 'racing' | 'ink' | 'paper' | 'charcoal';
-export type SortKey = 'modified' | 'name' | 'size';
+export type SortKey = 'modified' | 'name' | 'size' | 'attention' | 'contact' | 'recommend';
 
 export interface NavigatorSettings {
   theme: ThemeName;
