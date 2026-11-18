@@ -106,7 +106,11 @@ export function rosterGroups(app: App, files: TFile[], key: RosterKey, now: numb
       i.recommend === 'expired' ? 'Expired' : i.recommend === 'expiring' ? 'Expiring' : i.recommend === 'current' ? 'Current' : 'Unknown or none';
     return buckets(['Expiring', 'Expired', 'Unknown or none', 'Current'], label, byName);
   }
-  return [{ label: 'A → Z', files: [...files].sort(byName) }];
+  // Non-member notes (the folder's AGENTS.md and the like) go last here
+  // too, instead of filing alphabetically between members.
+  const out = [{ label: 'A → Z', files: [...members].sort(byName) }];
+  if (others.length) out.push({ label: 'Other notes', files: others });
+  return out;
 }
 
 /** A folder is a roster when most of its notes are member profiles. */
